@@ -1,12 +1,14 @@
 
 import Sidebar from './Sidebar';
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, ScrollView, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { CategoryContext } from '../context/CategoryContext';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBalance } from '../context/BalanceContext';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { useLanguage } from '../context/LanguageContext';
 
 
 const NewTransaction = () => {
@@ -18,38 +20,17 @@ const NewTransaction = () => {
     const [note, setNote] = useState('');
     const navigation = useNavigation();
     const { cardBalance, setCardBalance, cashBalance, setCashBalance } = useBalance();
+    const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+    const { translations } = useLanguage();
+
+    const handleConfirmDate = (date) => {
+        setDate(date.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+        setDatePickerVisible(false);
+    };
+
 
     const currentYear = new Date().getFullYear();
 
-    const handleDateInput = (input) => {
-        // Remove invalid characters, allowing only numbers and "-"
-        let sanitizedInput = input.replace(/[^0-9\-]/g, '');
-
-        // Ensure the format is maintained as "YYYY-MM-DD"
-        const parts = sanitizedInput.split('-');
-
-        // Validate each part
-        if (parts.length > 3) return; // More than 3 parts is invalid
-
-        let formattedDate = '';
-
-        // Add year part (4 digits)
-        if (parts[0]?.length <= 4) formattedDate += parts[0];
-        if (parts[0]?.length === 4 && sanitizedInput.length > 4) formattedDate += '-';
-
-        // Add month part (2 digits)
-        if (parts[1]?.length <= 2) formattedDate += parts[1];
-        if (parts[1]?.length === 2 && sanitizedInput.length > 7) formattedDate += '-';
-
-        // Add day part (2 digits)
-        if (parts[2]?.length <= 2) formattedDate += parts[2];
-
-        // Restrict total length to 10 (YYYY-MM-DD)
-        if (formattedDate.length > 10) return;
-
-        // Update state
-        setDate(formattedDate);
-    };
     const handleAmountInput = (input) => {
         const numericInput = input.replace(/[^0-9.]/g, ''); // Allow only numbers and decimal point
         setAmount(numericInput);
@@ -57,14 +38,14 @@ const NewTransaction = () => {
 
     const handleSave = async () => {
         if (!selectedCategory || !amount || !date) {
-            Alert.alert('Error', 'Please fill out all required fields.');
+            Alert.alert('Error', `${translations.allFieldAreRequiredError}`);
             return;
         }
 
         const selectedCategoryDetails = categories.find(cat => cat.name === selectedCategory);
 
         if (!selectedCategoryDetails) {
-            Alert.alert('Error', 'Invalid category selected.');
+            Alert.alert('Error', `${translations.invalidCategoryError}`);
             return;
         }
 
@@ -72,13 +53,13 @@ const NewTransaction = () => {
 
         const transactionAmount = parseFloat(amount);
         if (isNaN(transactionAmount) || transactionAmount <= 0) {
-            Alert.alert('Error', 'Amount must be a positive number.');
+            Alert.alert('Error', `${translations.amountNotPositiveError}`);
             return;
         }
         const selectedCategoryIndex = categories.findIndex(cat => cat.name === selectedCategory);
 
         if (selectedCategoryIndex === -1) {
-            Alert.alert('Error', 'Invalid category selected.');
+            Alert.alert('Error', `${translations.invalidCategoryError}`);
             return;
         }
 
@@ -93,13 +74,13 @@ const NewTransaction = () => {
         // Update Balance Context
         if (paymentMethod === 'Karta') {
             if (cardBalance - transactionAmount < 0) {
-                Alert.alert('Error', 'Insufficient card balance.');
+                Alert.alert('Error', `${translations.insufficientCardBalanceError}`);
                 return;
             }
             setCardBalance(cardBalance - transactionAmount);
         } else if (paymentMethod === 'Gotówka') {
             if (cashBalance - transactionAmount < 0) {
-                Alert.alert('Error', 'Insufficient cash balance.');
+                Alert.alert('Error', `${translations.insufficientCashBalanceError}`);
                 return;
             }
             setCashBalance(cashBalance - transactionAmount);
@@ -125,12 +106,10 @@ const NewTransaction = () => {
                 ['categories', JSON.stringify(updatedCategories)],
                 ['transactions', JSON.stringify(updatedTransactions)],
             ]);
-
-            Alert.alert('Success', 'Transaction saved!');
             navigation.navigate('TransactionsHistory');
         } catch (error) {
             console.error('Error saving transaction:', error);
-            Alert.alert('Error', 'Failed to save the transaction.');
+            Alert.alert('Error', `${translations.failedToSaveTransactionError}`);
         }
     };
 
@@ -141,7 +120,7 @@ const NewTransaction = () => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
@@ -155,9 +134,9 @@ const NewTransaction = () => {
 
             <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
                 <View>
-                    <Text style={styles.title}>Nowa transakcja</Text>
+                    <Text style={styles.title}>{translations.newTransaction}</Text>
                 </View>
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Kategoria</Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.category}</Text>
 
                 {categories?.length > 0 ? (
                     <View style={{
@@ -177,12 +156,12 @@ const NewTransaction = () => {
                         </Picker>
                     </View>
                 ) : (
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 20, }}>No categories available. Please add a category first.</Text>
+                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 20, }}>{translations.noCategoriesText}</Text>
                 )}
 
 
                 {/* Payment Method */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Gotówka Karta  </Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.cardOrCash}</Text>
                 <View style={{
                     borderWidth: 1,
                     borderColor: '#ccc',
@@ -195,14 +174,14 @@ const NewTransaction = () => {
                         onValueChange={(itemValue) => setPaymentMethod(itemValue)}
                     >
 
-                        <Picker.Item label="Karta" value="Karta" style={{ color: "#76787A", }} />
-                        <Picker.Item label="Gotówka" value="Gotówka" style={{ color: "#76787A", }} />
+                        <Picker.Item label={translations.card} value="Karta" style={{ color: "#76787A", }} />
+                        <Picker.Item label={translations.cash} value="Gotówka" style={{ color: "#76787A", }} />
 
                     </Picker>
                 </View>
 
                 {/* Amount */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Kwota</Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
 
                 <View style={styles.inputWrapper}>
                     <Text style={styles.currencySymbol}>zł</Text>
@@ -216,17 +195,16 @@ const NewTransaction = () => {
                 </View>
 
                 {/* Date */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Data</Text>
-                <TextInput
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
+                <TouchableOpacity
                     style={styles.input}
-                    value={date}
-                    onChangeText={handleDateInput}
-                    placeholder={`${currentYear}-00-00`}
-                    maxLength={11}
-                />
+                    onPress={() => setDatePickerVisible(true)}
+                >
+                    <Text>{date || `${currentYear}-00-00`}</Text>
+                </TouchableOpacity>
 
                 {/* Note */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Notatka (fakultatywny)</Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
                 <TextInput
                     style={{
                         borderWidth: 1,
@@ -236,15 +214,21 @@ const NewTransaction = () => {
                     }}
                     value={note}
                     onChangeText={setNote}
-                    placeholder="Informacje o zakupie"
                 />
 
                 {/* Save Button */}
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>Zapisz</Text>
+                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </ScrollView>
-        </View >
+
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleConfirmDate}
+                onCancel={() => setDatePickerVisible(false)}
+            />
+        </SafeAreaView>
     );
 };
 
@@ -309,7 +293,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 10,
-        paddingHorizontal: 10,
+        padding: 10,
         marginBottom: 20,
     },
     currencySymbol: {

@@ -1,12 +1,14 @@
 import Sidebar from './Sidebar';
 import React, { useContext, useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, Animated, ScrollView, } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, Animated, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GoalContext } from '../context/GoalContext';
 import { useBalance } from '../context/BalanceContext';
 import { CategoryContext } from '../context/CategoryContext';
-import UpDownIcon from '../assets/UpDown.png';
+import UpDown from '../assets/UpDown.png';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { useLanguage } from '../context/LanguageContext';
 
 
 const Savings = () => {
@@ -23,6 +25,32 @@ const Savings = () => {
     const [isBottomBarVisible, setBottomBarVisible] = useState(false);
     const { cardBalance, setCardBalance, cashBalance, setCashBalance } = useBalance();
     const { transactions, setTransactions } = useContext(CategoryContext);
+    const [isStartDatePickerVisible, setStartDatePickerVisible] = useState(false);
+    const [isFinishDatePickerVisible, setFinishDatePickerVisible] = useState(false);
+    const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+    const { translations } = useLanguage();
+
+    const showStartDatePicker = () => setStartDatePickerVisible(true);
+    const hideStartDatePicker = () => setStartDatePickerVisible(false);
+    const handleStartDateConfirm = (date) => {
+        setStartDate(date.toISOString().split("T")[0]); // Format date as YYYY-MM-DD
+        hideStartDatePicker();
+    };
+
+    // Handlers for the finish date picker
+    const showFinishDatePicker = () => setFinishDatePickerVisible(true);
+    const hideFinishDatePicker = () => setFinishDatePickerVisible(false);
+    const handleFinishDateConfirm = (date) => {
+        setFinishDate(date.toISOString().split("T")[0]); // Format date as YYYY-MM-DD
+        hideFinishDatePicker();
+    };
+
+    const handleConfirmDate = (date) => {
+        setDate(date.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+        setDatePickerVisible(false);
+    };
+
+
 
     const toggleBottomBar = () => {
         const bottomBarHeight = 300; // Height of the bottom bar (adjust if necessary)
@@ -61,22 +89,6 @@ const Savings = () => {
         setter(numericInput);
     };
 
-    const handleDateInput = (input: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
-        const sanitizedInput = input.replace(/[^0-9\-]/g, '');
-        const parts = sanitizedInput.split('-');
-        let formattedDate = '';
-
-        if (parts[0]?.length <= 4) formattedDate += parts[0];
-        if (parts[0]?.length === 4 && sanitizedInput.length > 4) formattedDate += '-';
-        if (parts[1]?.length <= 2) formattedDate += parts[1];
-        if (parts[1]?.length === 2 && sanitizedInput.length > 7) formattedDate += '-';
-        if (parts[2]?.length <= 2) formattedDate += parts[2];
-
-        if (formattedDate.length > 10) return;
-
-        setter(formattedDate);
-    };
-
     const validateDate = (input: string): boolean => {
         const datePattern = /^\d{4}-\d{2}-\d{2}$/; // Format: YYYY-MM-DD
         return datePattern.test(input);
@@ -91,19 +103,18 @@ const Savings = () => {
             finishDate,
             goalNote,
         }));
-        Alert.alert('Goal updated successfully!');
     };
 
     const saveAmount = () => {
         const addedAmount = parseFloat(amount) || 0;
 
         if (!validateDate(date)) {
-            Alert.alert('Error', 'Please enter a valid date in the format YYYY-MM-DD.');
+            Alert.alert('Error', `${translations.notAllFieldsError}`);
             return;
         }
 
         if (cardBalance + cashBalance < addedAmount) {
-            Alert.alert('Error', 'Insufficient balance to add this amount.');
+            Alert.alert('Error', `${translations.insufficientBalanceError}`);
             return;
         }
 
@@ -127,8 +138,8 @@ const Savings = () => {
         const newTransaction = {
             amount: addedAmount,
             date: date,
-            category: 'Doładowania',
-            icon: UpDownIcon, // Update the path if necessary
+            category: `${translations.topUps}`,
+            icon: 'UpDown',
             color: '#1CD6AB',
             note: goalNote,
         };
@@ -136,7 +147,6 @@ const Savings = () => {
         setTransactions((prev) => [...prev, newTransaction]);
 
 
-        Alert.alert('Amount added successfully!');
         setAmount('');
         setDate('');
         toggleBottomBar();
@@ -156,12 +166,12 @@ const Savings = () => {
 
             // Check if the goal is reached
             if (goalData.currentProgress >= goalData.goalAmount) {
-                Alert.alert('Success', 'The goal has been reached!');
+                Alert.alert(`${translations.goalReached}`);
                 resetGoal(); // Reset goal data
             }
             // Check if the finish date has passed without reaching the goal
             else if (finishDate < now) {
-                Alert.alert('Time Up', 'The goal was not reached in time.');
+                Alert.alert(`${translations.goalNotReached}`);
                 resetGoal(); // Reset goal data
             }
         }
@@ -175,19 +185,17 @@ const Savings = () => {
     // Show message if no goal exists
     if (!goalData) {
         return (
-            <View style={styles.container}>
-                <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}
-                    onPress={() => navigation.navigate('Homepage')}
-                >
-                    <Text style={styles.noGoalMessage}>Create a goal first.</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity style={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}
+                onPress={() => navigation.navigate('Homepage')}
+            >
+                <Text style={styles.noGoalMessage}>{translations.createAGoalText}</Text>
+            </TouchableOpacity>
         );
     }
 
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
@@ -196,7 +204,7 @@ const Savings = () => {
                     >
 
                         <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>Strona główna</Text>
+                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
                         <Image source={require('../assets/Menu.png')} style={styles.menu} />
@@ -207,7 +215,7 @@ const Savings = () => {
 
             <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
                 <View>
-                    <Text style={styles.title}>Twoje oszczędności</Text>
+                    <Text style={styles.title}>{translations.savings}</Text>
                 </View>
                 <View style={{ height: 90, }}>
                     <View style={styles.progressBarWrapper}>
@@ -217,10 +225,10 @@ const Savings = () => {
                         <Text style={styles.progressLabel}>{currentProgress} zł / {goalAmount} zł</Text>
                     </View>
                 </View>
-                <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", width: 110, marginVertical: 20 }} onPress={toggleBottomBar}>
-                    <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Doładuj</Text>
+                <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", marginVertical: 20, maxWidth: 120, }} onPress={toggleBottomBar}>
+                    <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.topUpButton}</Text>
                 </TouchableOpacity>
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Cel akumulacji</Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.AccumulationPurpose}</Text>
                 <TextInput
                     style={{
                         borderWidth: 1,
@@ -236,7 +244,7 @@ const Savings = () => {
 
 
                 {/* Amount */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Kwota</Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
 
                 <View style={styles.inputWrapper}>
                     <Text style={styles.currencySymbol}>zł</Text>
@@ -252,42 +260,52 @@ const Savings = () => {
                 {/* Date */}
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 20, marginBottom: 20, }}>
                     <View>
-                        <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Data początkowa</Text>
-                        <TextInput
+                        <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.startDate}</Text>
+                        <TouchableOpacity
+                            onPress={showStartDatePicker}
                             style={{
                                 borderWidth: 1,
                                 borderColor: '#ccc',
                                 borderRadius: 10,
                                 padding: 10,
                             }}
-                            value={startDate}
-                            onChangeText={(text) => handleDateInput(text, setStartDate)}
-                            placeholder={`${currentYear}-00-00`}
-                            maxLength={11}
-                        />
+                        >
+                            <Text>{startDate || `${currentYear}-00-00`}</Text>
+                        </TouchableOpacity>
                     </View>
+                    <DateTimePickerModal
+                        isVisible={isStartDatePickerVisible}
+                        mode="date"
+                        onConfirm={handleStartDateConfirm}
+                        onCancel={hideStartDatePicker}
+                    />
 
                     <View>
-                        <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Data zakończenia</Text>
-                        <TextInput
+                        <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.endDate}</Text>
+                        <TouchableOpacity
+                            onPress={showFinishDatePicker}
                             style={{
                                 borderWidth: 1,
                                 borderColor: '#ccc',
                                 borderRadius: 10,
                                 padding: 10
                             }}
-                            value={finishDate}
-                            onChangeText={(text) => handleDateInput(text, setFinishDate)}
-                            placeholder={`0000-00-00`}
-                            maxLength={11}
-                        />
+                        >
+                            <Text>{finishDate || `0000-00-00`}</Text>
+                        </TouchableOpacity>
                     </View>
+                    <DateTimePickerModal
+                        isVisible={isFinishDatePickerVisible}
+                        mode="date"
+                        onConfirm={handleFinishDateConfirm}
+                        onCancel={hideFinishDatePicker}
+                    />
 
                 </View>
 
 
                 {/* Note */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Notatka (fakultatywny)</Text>
+                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
                 <TextInput
                     style={{
                         borderWidth: 1,
@@ -298,12 +316,11 @@ const Savings = () => {
                     }}
                     value={goalNote}
                     onChangeText={setGoalNote}
-                    placeholder="Informacje o zakupie"
                 />
 
                 {/* Save Button */}
                 <TouchableOpacity style={styles.saveButton} onPress={saveGoal} >
-                    <Text style={styles.saveButtonText}>Zapisz</Text>
+                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </ScrollView>
 
@@ -316,12 +333,12 @@ const Savings = () => {
                     },
                 ]}>
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#fff", marginBottom: 20, }}>
-                        <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Dodaj kategorię</Text>
+                        <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addtopUpText}</Text>
                         <TouchableOpacity onPress={toggleBottomBar}>
                             <Image source={require('../assets/x.png')} />
                         </TouchableOpacity>
                     </View>
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Kwota</Text>
+                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
 
                     <View style={styles.inputWrapper}>
                         <Text style={styles.currencySymbol}>zł</Text>
@@ -334,15 +351,26 @@ const Savings = () => {
                         />
                     </View>
 
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Data</Text>
-                    <TextInput value={date} onChangeText={(text) => handleDateInput(text, setDate)} placeholder={`${currentYear}-00-00`} style={styles.input} maxLength={11} />
+                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
+                    <TouchableOpacity
+                        style={styles.input}
+                        onPress={() => setDatePickerVisible(true)}
+                    >
+                        <Text>{date || `${currentYear}-00-00`}</Text>
+                    </TouchableOpacity>
 
                     <TouchableOpacity style={styles.saveButton} onPress={saveAmount}>
-                        <Text style={styles.saveButtonText}>Zapisz</Text>
+                        <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                     </TouchableOpacity>
                 </Animated.View>
             )}
-        </View>
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleConfirmDate}
+                onCancel={() => setDatePickerVisible(false)}
+            />
+        </SafeAreaView>
     );
 };
 
@@ -372,7 +400,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#1C26FF',
         padding: 15,
         borderRadius: 10,
-        marginBottom: 20,
         alignItems: 'center',
     },
     saveButtonText: {
@@ -405,8 +432,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 10,
-        paddingHorizontal: 10,
         marginBottom: 20,
+        padding: 10,
     },
     currencySymbol: {
         fontSize: 16,
@@ -414,8 +441,8 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
     numericInput: {
-        flex: 1,
         fontSize: 16,
+        flex: 1,
         color: '#000',
     },
     bottomBar: {

@@ -6,6 +6,7 @@ import {
     Image,
     TouchableOpacity,
     ScrollView,
+    SafeAreaView,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useBalance } from '../context/BalanceContext';
@@ -13,6 +14,7 @@ import Sidebar from './Sidebar';
 import { NewestTransactionsContext } from '../context/NewestTransactionsContext';
 import { GoalContext } from '../context/GoalContext';
 import CircularVisualization from './CircularVisualization';
+import { useLanguage } from '../context/LanguageContext';
 
 
 function Homepage() {
@@ -20,6 +22,7 @@ function Homepage() {
     const { newestTransactions } = useContext(NewestTransactionsContext);
     const navigation = useNavigation();
     const { cardBalance, cashBalance, loadData } = useBalance();
+    const { translations } = useLanguage();
 
 
 
@@ -48,7 +51,7 @@ function Homepage() {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
@@ -61,27 +64,28 @@ function Homepage() {
             </View>
             <ScrollView showsVerticalScrollIndicator={false} style={styles.contentBlock}>
                 <View>
-                    <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>Łączne saldo</Text>
+                    <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.totalBalance}</Text>
+
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
                     <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 9 }}>
                         <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{(cardBalance + cashBalance).toFixed(2)} zł</Text>
-                        <Text style={{ color: "#A3A3A3", fontSize: 20, fontFamily: 'Montserrat-Light' }}>Karta</Text>
+                        <Text style={{ color: "#A3A3A3", fontSize: 20, fontFamily: 'Montserrat-Light' }}>{translations.card}</Text>
                         <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{cardBalance.toFixed(2)} zł</Text>
                     </View>
                     <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
                         <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 20, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center" }}
                             onPress={() => navigation.navigate('TotalBalance')}
                         >
-                            <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginRight: 10 }}>Edytuj</Text>
+                            <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginRight: 10 }}>{translations.editButton}</Text>
                             <Image source={require('../assets/Vector.png')} style={{}} />
                         </TouchableOpacity>
-                        <Text style={{ color: "#A3A3A3", fontSize: 20, fontFamily: 'Montserrat-Light' }}>Gotówka</Text>
+                        <Text style={{ color: "#A3A3A3", fontSize: 20, fontFamily: 'Montserrat-Light' }}>{translations.cash}</Text>
                         <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{cashBalance.toFixed(2)} zł</Text>
                     </View>
                 </View>
                 <View>
-                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>Twoje oszczędności</Text>
+                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.savings}</Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
                     {goalData ? (
@@ -92,7 +96,7 @@ function Homepage() {
                             <View style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap" }}>
                                 <View style={{ display: "flex", flexDirection: "column", marginLeft: 4, gap: 6, minWidth: 90, width: "63%", alignItems: "center" }}>
                                     <Text style={{ fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{goalData.accumulation}</Text>
-                                    <Text style={{ color: "#A3A3A3", fontSize: 16, fontFamily: 'Montserrat-Bold' }}>Skumulowane: </Text>
+                                    <Text style={{ color: "#A3A3A3", fontSize: 16, fontFamily: 'Montserrat-Bold' }}>{translations.cumulative} </Text>
                                     <Text style={{ color: "#22D9A0", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{goalData.currentProgress} zł</Text>
                                 </View>
                                 <View style={{ width: 80, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
@@ -116,12 +120,12 @@ function Homepage() {
                         <Image source={require('../assets/boy.png')} style={{ resizeMode: 'contain', height: 220 }} />
                     </View>
                     <View style={{ display: "flex", flexDirection: "column", width: "60%", gap: 10, left: -25 }}>
-                        <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Wskazówki dotyczące umiejętności finansowych</Text>
-                        <Text style={{ color: "112540", fontSize: 13, fontFamily: 'Montserrat-Light' }}>Wskazówek dotyczących umiejętności finansowych, które mogą być przydatne:</Text>
+                        <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.financialLiteracyTips}</Text>
+                        <Text style={{ color: "112540", fontSize: 13, fontFamily: 'Montserrat-Light' }}>{translations.tipsThatMightBeHelpful}</Text>
                         <View style={{ display: "flex", alignItems: "center" }}>
                             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tips')}>
                                 <Text style={styles.buttonText}>
-                                    Czytaj
+                                    {translations.readButton}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -129,10 +133,10 @@ function Homepage() {
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                     <View style={{ display: "flex", flexDirection: 'row' }}>
-                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Тransakcji  </Text><Text style={{ fontSize: 17, fontFamily: 'Montserrat-Light', marginLeft: -5 }}>historia</Text>
+                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.TransactionsHistoryFHalf}  </Text><Text style={{ fontSize: 17, fontFamily: 'Montserrat-Light', marginLeft: -5 }}>{translations.TransactionsHistorySHalf}</Text>
                     </View>
                     <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center" }} onPress={() => navigation.navigate('TransactionsHistory')}>
-                        <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Wszystkie</Text>
+                        <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.viewAllButton}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{ display: 'flex', flexDirection: "column", gap: 8, marginBottom: 10 }}>
@@ -143,8 +147,7 @@ function Homepage() {
                                 <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                                     <View style={[styles.transactionCard, { backgroundColor: transaction.color }]} >
                                         <Image
-                                            source={transaction.icon} // Use the saved icon directly
-
+                                            source={transaction.icon === 'UpDown' ? require('../assets/UpDown.png') : transaction.icon}
                                         />
                                     </View>
                                     <View style={{ display: "flex", flexDirection: "column", marginLeft: 12 }}>
@@ -159,11 +162,11 @@ function Homepage() {
                             </View>
                         ))
                     ) : (
-                        <Text style={{ textAlign: 'center', color: '#76787A', fontSize: 15 }}>No recent transactions.</Text>
+                        <Text style={{ textAlign: 'center', color: '#76787A', fontSize: 15 }}>{translations.noRecentTransactions}</Text>
                     )}
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({

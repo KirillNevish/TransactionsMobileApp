@@ -7,11 +7,13 @@ import {
     TouchableOpacity,
     Alert,
     Image,
+    SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Sidebar from './Sidebar';
 import { useBalance } from '../context/BalanceContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const TotalBalance = () => {
     const navigation = useNavigation();
@@ -21,6 +23,7 @@ const TotalBalance = () => {
     const [cashInput, setCashInput] = useState<string>('');
     const [cardInput, setCardInput] = useState<string>('');
     const [isSidebarVisible, setSidebarVisible] = useState(false);
+    const { translations } = useLanguage();
 
     useEffect(() => {
         loadData(); // Load data when component mounts
@@ -30,7 +33,7 @@ const TotalBalance = () => {
         // Validate inputs
         const inputs = [profit, otherIncome, cashInput, cardInput];
         if (inputs.some(input => isNaN(Number(input)))) {
-            Alert.alert('Błąd', 'Wszystkie pola muszą zawierać tylko liczby.');
+            Alert.alert('Error', `${translations.numbersOnlyError}`);
             return;
         }
 
@@ -40,7 +43,7 @@ const TotalBalance = () => {
 
         // Prevent negative balances
         if (updatedCardBalance < 0 || updatedCashBalance < 0) {
-            Alert.alert('Błąd', 'Saldo nie może być mniejsze niż zero.');
+            Alert.alert('Error', `${translations.amountNotPositiveError}`);
             return;
         }
 
@@ -55,9 +58,8 @@ const TotalBalance = () => {
                 cashBalance: updatedCashBalance,
                 cardBalance: updatedCardBalance,
             }));
-            Alert.alert('Success', 'Data saved successfully!');
         } catch (error) {
-            Alert.alert('Error', 'Failed to save data.');
+            Alert.alert('Error', `${translations.savingDataError}`);
         }
 
         // Reset inputs
@@ -72,7 +74,7 @@ const TotalBalance = () => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: "fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "fff" }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
@@ -81,7 +83,7 @@ const TotalBalance = () => {
                     >
 
                         <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>Strona główna</Text>
+                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
                         <Image source={require('../assets/Menu.png')} style={styles.menu} />
@@ -94,7 +96,7 @@ const TotalBalance = () => {
 
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
                     <View>
-                        <Text style={styles.title}>Łączne saldo</Text>
+                        <Text style={styles.title}>{translations.totalBalance}</Text>
                         <Text style={styles.totalBalance}>
                             {/* {cardBalance + cashBalance} zł */}
                             {(cardBalance + cashBalance).toFixed(2)} zł
@@ -107,11 +109,11 @@ const TotalBalance = () => {
 
                 <View style={styles.balanceRow}>
                     <View>
-                        <Text style={styles.balanceTitle}>Karta</Text>
+                        <Text style={styles.balanceTitle}>{translations.card}</Text>
                         <Text style={styles.balanceValue}>{cardBalance.toFixed(2)} zł</Text>
                     </View>
                     <View style={{ alignItems: "flex-end" }}>
-                        <Text style={styles.balanceTitle}>Gotówka</Text>
+                        <Text style={styles.balanceTitle}>{translations.cash}</Text>
                         <Text style={styles.balanceValue}>{cashBalance.toFixed(2)} zł</Text>
                     </View>
                 </View>
@@ -119,38 +121,38 @@ const TotalBalance = () => {
                 {/* Editable inputs */}
                 <TextInput
                     style={styles.input}
-                    placeholder="Zysk"
+                    placeholder={translations.profit}
                     value={profit}
                     keyboardType="numeric"
                     onChangeText={text => setProfit(text)}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Inne źródła dochodu"
+                    placeholder={translations.otherIncome}
                     value={otherIncome}
                     keyboardType="numeric"
                     onChangeText={text => setOtherIncome(text)}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Gotówka"
+                    placeholder={translations.cash}
                     value={cashInput}
                     keyboardType="numeric"
                     onChangeText={text => setCashInput(text)}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Karta"
+                    placeholder={translations.card}
                     value={cardInput}
                     keyboardType="numeric"
                     onChangeText={text => setCardInput(text)}
                 />
 
                 <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>Zapisz</Text>
+                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 

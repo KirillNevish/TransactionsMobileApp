@@ -8,6 +8,7 @@ import {
     Alert,
     Image,
     ScrollView,
+    SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Sidebar from './Sidebar';
@@ -17,6 +18,7 @@ import { Modal } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useBalance } from '../context/BalanceContext';
 import EditTransactionForm from './EditTransactionForm';
+import { useLanguage } from '../context/LanguageContext';
 
 
 const TransactionsHistory = () => {
@@ -26,6 +28,7 @@ const TransactionsHistory = () => {
     const { cardBalance, setCardBalance, cashBalance, setCashBalance } = useBalance();
     const [editingTransaction, setEditingTransaction] = useState(null); // To track the transaction being edited
     const [modalVisible, setModalVisible] = useState(false);
+    const { translations } = useLanguage();
 
 
     const toggleSidebar = () => {
@@ -70,7 +73,7 @@ const TransactionsHistory = () => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
@@ -79,7 +82,7 @@ const TransactionsHistory = () => {
                     >
 
                         <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>Strona główna</Text>
+                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
                         <Image source={require('../assets/Menu.png')} style={styles.menu} />
@@ -90,13 +93,13 @@ const TransactionsHistory = () => {
 
             <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
                 <View>
-                    <Text style={styles.title}>Тransakcji <Text style={{
+                    <Text style={styles.title}>{translations.TransactionsHistoryFHalf} <Text style={{
                         fontSize: 24,
                         fontFamily: "Montserrat-Light",
                         fontWeight: 'light',
                         color: '#000',
                         marginBottom: 10
-                    }}>historia</Text></Text>
+                    }}>{translations.TransactionsHistorySHalf}</Text></Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "column", gap: 15 }}>
 
@@ -118,8 +121,7 @@ const TransactionsHistory = () => {
                                     <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                                         <View style={[styles.transactionCard, { backgroundColor: transaction.color }]} >
                                             <Image
-                                                source={transaction.icon} // Use the saved icon directly
-
+                                                source={transaction.icon === 'UpDown' ? require('../assets/UpDown.png') : transaction.icon}
                                             />
                                         </View>
                                         <View style={{ display: "flex", flexDirection: "column", marginLeft: 12 }}>
@@ -135,7 +137,7 @@ const TransactionsHistory = () => {
                             </Swipeable>
                         ))
                     ) : (
-                        <Text style={{ textAlign: "center", marginTop: 20, color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light' }}>No transactions yet.</Text>
+                        <Text style={{ textAlign: "center", marginTop: 20, color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light' }}>{translations.noTransactionsYet}</Text>
                     )}
 
 
@@ -149,7 +151,7 @@ const TransactionsHistory = () => {
                     onCancel={() => setModalVisible(false)}
                 />
             </Modal>
-        </View>
+        </SafeAreaView>
     );
 };
 

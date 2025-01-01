@@ -9,11 +9,13 @@ import {
     Image,
     Animated,
     ScrollView,
+    SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Sidebar from './Sidebar';
 import { CategoryContext } from '../context/CategoryContext';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
+import { useLanguage } from '../context/LanguageContext';
 
 const CircleVisualization = () => {
     const { categories, categoryTotals, totalAmount } = useContext(CategoryContext);
@@ -92,6 +94,7 @@ const Transactions = () => {
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedIcon, setSelectedIcon] = useState(null);
     const context = useContext(CategoryContext);
+    const { translations } = useLanguage();
     if (!context) {
         throw new Error("CategoryContext must be used within a CategoryProvider");
     }
@@ -129,12 +132,12 @@ const Transactions = () => {
 
     const addCategory = async () => {
         if (!categoryName || !selectedColor || !selectedIcon) {
-            Alert.alert('Błąd', 'Wszystkie pola są wymagane!');
+            Alert.alert('Error', `${translations.allFieldAreRequiredError}`);
             return;
         }
 
         if (categories.some((cat) => cat.name === categoryName)) {
-            Alert.alert('Błąd', 'Kategoria o tej nazwie już istnieje!');
+            Alert.alert('Error', `${translations.sameCategoryNameError}`);
             return;
         }
 
@@ -211,7 +214,7 @@ const Transactions = () => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: "fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "fff" }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
@@ -225,18 +228,18 @@ const Transactions = () => {
 
             <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
                 <View>
-                    <Text style={styles.title}>Twoje transakcje</Text>
+                    <Text style={styles.title}>{translations.transactions}</Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
                     <CircleVisualization />
                 </View>
                 <View style={{}}>
-                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>Expenditure</Text>
+                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.categoryExpediture}</Text>
                     <View style={{ display: "flex", flexDirection: "column", gap: 8, }}>
                         {categories.map((cat, index) => {
                             const totalAmount = calculateTotalAmountForCategory(cat.name);
                             return (
-                                <TouchableOpacity key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                                <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                                     <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                                         <View style={[styles.iconContainer, { backgroundColor: cat.color }]}>
                                             {cat.icon && (
@@ -250,7 +253,7 @@ const Transactions = () => {
                                     <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                                         <Text style={{ color: "#1C26FF", fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>zł {totalAmount || 0}</Text>
                                     </View>
-                                </TouchableOpacity>
+                                </View>
                             );
                         })}
                     </View>
@@ -260,7 +263,7 @@ const Transactions = () => {
                     <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%", height: 54, borderColor: "#1C26FF", borderWidth: 1, borderRadius: 30 }} onPress={toggleBottomBar}>
                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                             <Image source={require('../assets/plusBlue.png')} style={{}} />
-                            <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginLeft: 7 }}>Dodaj kategorię</Text>
+                            <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginLeft: 7 }}>{translations.addCategoryButton}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -275,7 +278,7 @@ const Transactions = () => {
                     },
                 ]}>
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#fff", marginBottom: 20, }}>
-                        <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Dodaj kategorię</Text>
+                        <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addCategoryButton}</Text>
                         <TouchableOpacity onPress={toggleBottomBar}>
                             <Image source={require('../assets/x.png')} />
                         </TouchableOpacity>
@@ -283,11 +286,11 @@ const Transactions = () => {
 
                     <TextInput
                         style={styles.input}
-                        placeholder="Nazwa kategorii"
+                        placeholder={translations.categoryName}
                         value={categoryName}
                         onChangeText={setCategoryName}
                     />
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Wybierz kolor</Text>
+                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.chooseCategoryColor}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.colorScroll}>
                         {colors.map((color, index) => (
                             <TouchableOpacity
@@ -297,7 +300,7 @@ const Transactions = () => {
                             />
                         ))}
                     </ScrollView>
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Wybierz ikonę</Text>
+                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.chooseCategoryIcon}</Text>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.iconScroll}>
                         {Object.entries(ICONS).map(([key, icon]) => (
                             <TouchableOpacity key={key} onPress={() => setSelectedIcon(key)}> {/* Use the key */}
@@ -312,12 +315,12 @@ const Transactions = () => {
                         ))}
                     </ScrollView>
                     <TouchableOpacity style={styles.saveButton} onPress={addCategory}>
-                        <Text style={styles.saveButtonText}>Zapisz</Text>
+                        <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                     </TouchableOpacity>
                 </Animated.View>
             )}
 
-        </View>
+        </SafeAreaView>
     );
 };
 

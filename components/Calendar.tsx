@@ -1,27 +1,30 @@
 import Sidebar from './Sidebar';
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { CategoryContext } from '../context/CategoryContext';
+import { useLanguage } from '../context/LanguageContext';
 
-LocaleConfig.locales['pl'] = {
-    monthNames: [
-        'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
-        'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień',
-    ],
-    monthNamesShort: [
-        'Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru',
-    ],
-    dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
-    dayNamesShort: ['Ndz', 'Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob'],
-};
-LocaleConfig.defaultLocale = 'pl';
+// LocaleConfig.locales['pl'] = {
+//     monthNames: [
+//         'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+//         'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień',
+//     ],
+//     monthNamesShort: [
+//         'Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru',
+//     ],
+//     dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+//     dayNamesShort: ['Ndz', 'Pon', 'Wto', 'Śro', 'Czw', 'Pią', 'Sob'],
+
+// };
+// LocaleConfig.defaultLocale = 'pl';
 
 
 const CalendarScreen = () => {
     const { transactions } = useContext(CategoryContext);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [isSidebarVisible, setSidebarVisible] = useState(false);
+    const { translations } = useLanguage();
 
 
     const markedDates = transactions.reduce((acc, transaction) => {
@@ -55,8 +58,18 @@ const CalendarScreen = () => {
         setCurrentDate(selectedDate);
     }
 
+    useEffect(() => {
+        LocaleConfig.locales['custom'] = {
+            monthNames: translations.monthNames,
+            monthNamesShort: translations.monthNamesShort,
+            dayNames: translations.dayNames,
+            dayNamesShort: translations.dayNamesShort,
+        };
+        LocaleConfig.defaultLocale = 'custom';
+    }, [translations]);
+
     return (
-        <View style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ backgroundColor: "#121212" }}>
                 <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
@@ -122,7 +135,7 @@ const CalendarScreen = () => {
                     )}
                 </View>
             </View>
-        </View >
+        </SafeAreaView>
     );
 };
 

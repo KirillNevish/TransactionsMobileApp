@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useLanguage } from '../context/LanguageContext';
 
 interface SidebarProps {
     isVisible: boolean; // Boolean to control visibility
@@ -17,6 +18,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
     const slideAnim = useRef(new Animated.Value(-300)).current; // Start off-screen (-300px)
     const navigation = useNavigation(); // Access navigation
+    const { translations } = useLanguage();
 
 
     useEffect(() => {
@@ -42,17 +44,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                 <Text style={styles.closeText}>X</Text>
             </TouchableOpacity>
-            <Text style={styles.userName}>Imię Nazwisko</Text>
+            <Text style={styles.userName}>{translations.Sidebar}</Text>
             <View style={styles.menuItems}>
                 {[
-                    { label: 'Strona główna', screen: 'Homepage' },
-                    { label: 'Łączne saldo', screen: 'TotalBalance' },
-                    { label: 'Twoje oszczędności', screen: 'Savings' },
-                    { label: 'Twoje transakcje', screen: 'Transactions' },
-                    { label: 'Nowa transakcja', screen: 'NewTransaction' },
-                    { label: 'Kalendarz', screen: 'CalendarScreen' },
-                    { label: 'Wskazówki', screen: 'Tips' },
-                    { label: 'Ustawienia', screen: 'Settings' },
+                    { label: `${translations.homepage}`, screen: 'Homepage' },
+                    { label: `${translations.totalBalance}`, screen: 'TotalBalance' },
+                    { label: `${translations.savings}`, screen: 'Savings' },
+                    { label: `${translations.transactions}`, screen: 'Transactions' },
+                    { label: `${translations.newTransaction}`, screen: 'NewTransaction' },
+                    { label: `${translations.calendarScreen}`, screen: 'CalendarScreen' },
+                    { label: `${translations.tips}`, screen: 'Tips' },
+                    { label: `${translations.settings}`, screen: 'Settings' },
                 ].map((item, index) => (
                     <TouchableOpacity
                         key={index}

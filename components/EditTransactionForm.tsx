@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { CategoryContext } from '../context/CategoryContext';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Transaction {
     id: string;
@@ -39,6 +41,18 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
     const [selectedImage, setSelectedImage] = useState(transaction.icon);
     const [date, setDate] = useState(transaction.date);
     const [note, setNote] = useState(transaction.note);
+    const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+    const { translations } = useLanguage();
+
+    const currentYear = new Date().getFullYear();
+
+    const showDatePicker = () => setDatePickerVisible(true);
+    const hideDatePicker = () => setDatePickerVisible(false);
+    const handleDateConfirm = (date) => {
+        setDate(date.toISOString().split("T")[0]); // Format date as YYYY-MM-DD
+        hideDatePicker();
+    };
+
 
     const handleCategoryChange = (categoryName: string,) => {
         setSelectedCategory(categoryName);
@@ -50,39 +64,10 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
             setSelectedImage(category.icon);
         }
     };
-    const handleDateInput = (input) => {
-        // Remove invalid characters, allowing only numbers and "-"
-        let sanitizedInput = input.replace(/[^0-9\-]/g, '');
-
-        // Ensure the format is maintained as "YYYY-MM-DD"
-        const parts = sanitizedInput.split('-');
-
-        // Validate each part
-        if (parts.length > 3) return; // More than 3 parts is invalid
-
-        let formattedDate = '';
-
-        // Add year part (4 digits)
-        if (parts[0]?.length <= 4) formattedDate += parts[0];
-        if (parts[0]?.length === 4 && sanitizedInput.length > 4) formattedDate += '-';
-
-        // Add month part (2 digits)
-        if (parts[1]?.length <= 2) formattedDate += parts[1];
-        if (parts[1]?.length === 2 && sanitizedInput.length > 7) formattedDate += '-';
-
-        // Add day part (2 digits)
-        if (parts[2]?.length <= 2) formattedDate += parts[2];
-
-        // Restrict total length to 10 (YYYY-MM-DD)
-        if (formattedDate.length > 10) return;
-
-        // Update state
-        setDate(formattedDate);
-    };
 
     const handleSave = () => {
         if (!selectedCategory || !date) {
-            Alert.alert('Error', 'All fields are required.');
+            Alert.alert('Error', `${translations.allFieldAreRequiredError}`);
             return;
         }
 
@@ -99,12 +84,12 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
     return (
         <View style={styles.modalContainer}>
             <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#fff", marginBottom: 20, }}>
-                <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>Edycja transakcji</Text>
+                <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.editTransactionText}</Text>
                 <TouchableOpacity onPress={onCancel}>
                     <Image source={require('../assets/x.png')} />
                 </TouchableOpacity>
             </View>
-            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Kategoria</Text>
+            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.category}</Text>
             <View style={{
                 borderWidth: 1,
                 borderColor: '#ccc',
@@ -121,12 +106,30 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
                     ))}
                 </Picker>
             </View>
-            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Data</Text>
-            <TextInput value={date} onChangeText={handleDateInput} placeholder="Date" style={styles.input} maxLength={11} />
-            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>Notatka (fakultatywny)</Text>
-            <TextInput value={note} onChangeText={setNote} placeholder="Note" style={styles.input} />
+            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
+            <TouchableOpacity
+                onPress={showDatePicker}
+                style={{
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    borderRadius: 10,
+                    padding: 10,
+                    marginBottom: 20,
+
+                }}
+            >
+                <Text>{date || `${currentYear}-00-00`}</Text>
+            </TouchableOpacity>
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDateConfirm}
+                onCancel={hideDatePicker}
+            />
+            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
+            <TextInput value={note} onChangeText={setNote} style={styles.input} />
             <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-                <Text style={styles.saveButtonText}>Zapisz</Text>
+                <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
             </TouchableOpacity>
         </View>
     );
