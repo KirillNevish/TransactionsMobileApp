@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
+import { useTheme } from '../context/ThemeContext';
 
 interface CircularVisualizationProps {
     currentProgress: number;
@@ -16,6 +17,11 @@ const CircularVisualization: React.FC<CircularVisualizationProps> = ({ currentPr
 
     const progressPercentage = Math.min(currentProgress / goalAmount, 1); // Ensure max 100%
     const strokeDashoffset = circumference - progressPercentage * circumference;
+
+
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
     return (
         <Svg width={2 * (radius + strokeWidth)} height={2 * (radius + strokeWidth)}>
@@ -34,7 +40,7 @@ const CircularVisualization: React.FC<CircularVisualizationProps> = ({ currentPr
                 cx={centerX}
                 cy={centerY}
                 r={radius}
-                stroke="#1C26FF"
+                stroke={isDarkMode ? '#10CDFC' : '#1C26FF'}
                 strokeWidth={strokeWidth}
                 fill="none"
                 strokeDasharray={`${circumference} ${circumference}`}
@@ -51,7 +57,7 @@ const CircularVisualization: React.FC<CircularVisualizationProps> = ({ currentPr
                 alignmentBaseline="middle"
                 fontSize={12}
                 fontWeight="bold"
-                fill="#000"
+                fill={isDarkMode ? '#fff' : '#000'}
             >
                 {`zł ${goalAmount}`}
             </SvgText>

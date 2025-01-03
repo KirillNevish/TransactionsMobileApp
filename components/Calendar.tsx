@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'r
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { CategoryContext } from '../context/CategoryContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 // LocaleConfig.locales['pl'] = {
 //     monthNames: [
@@ -25,12 +26,15 @@ const CalendarScreen = () => {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [isSidebarVisible, setSidebarVisible] = useState(false);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
 
     const markedDates = transactions.reduce((acc, transaction) => {
         acc[transaction.date] = {
             selected: true,
-            selectedColor: '#1C26FF',
+            selectedColor: isDarkMode ? '#10CDFC' : '#1C26FF',
         };
         return acc;
     }, {});
@@ -69,14 +73,18 @@ const CalendarScreen = () => {
     }, [translations]);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ backgroundColor: "#121212" }}>
-                <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                     <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
-                        <Image source={require('../assets/logoHeader.png')} style={styles.logo} />
+                        <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                         <TouchableOpacity onPress={toggleSidebar}>
-                            <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                            <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                                ? { tintColor: '#112540' }
+                                : { tintColor: '#fff' }]} />
                         </TouchableOpacity>
 
                     </View>
@@ -94,7 +102,7 @@ const CalendarScreen = () => {
                         textSectionTitleColor: '#FFFFFF',
                         selectedDayBackgroundColor: '#3B82F6',
                         selectedDayTextColor: '#FFFFFF',
-                        todayTextColor: '#3B82F6',
+                        todayTextColor: isDarkMode ? '#10CDFC' : '#3B82F6',
                         dayTextColor: '#FFFFFF',
                         arrowColor: '#FFFFFF',
                         monthTextColor: '#FFFFFF',
@@ -106,22 +114,23 @@ const CalendarScreen = () => {
                 <View style={{ padding: 20, display: "flex", flexDirection: "column", gap: 15, marginTop: 10 }}>
                     {selectedDate && (
                         <>
-                            <Text style={styles.title}>
+                            <Text style={[styles.title, isDarkMode
+                                ? { color: '#fff' }
+                                : { color: '#000' }]}>
                                 {selectedDate}:
                             </Text>
                             {transactions
                                 .filter((transaction) => transaction.date === selectedDate)
                                 .map((transaction, index) => (
-                                    <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: '#F3F3F3', borderRadius: 12, padding: 15 }}>
+                                    <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderRadius: 12, padding: 15, backgroundColor: isDarkMode ? '#112540' : '#F3F3F3', }}>
                                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                                             <View style={[styles.transactionCard, { backgroundColor: transaction.color }]} >
                                                 <Image
-                                                    source={transaction.icon} // Use the saved icon directly
-
+                                                    source={transaction.icon === 'UpDown' ? require('../assets/UpDown.png') : transaction.icon}
                                                 />
                                             </View>
                                             <View style={{ display: "flex", flexDirection: "column", marginLeft: 12 }}>
-                                                <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{transaction.category}</Text>
+                                                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{transaction.category}</Text>
                                                 <Text style={{ color: "#A3A3A3", fontSize: 12, fontFamily: 'Montserrat-Bold' }}>{transaction.note || "No note"}</Text>
                                             </View>
                                         </View>

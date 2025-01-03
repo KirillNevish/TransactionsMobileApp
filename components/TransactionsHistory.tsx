@@ -19,6 +19,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useBalance } from '../context/BalanceContext';
 import EditTransactionForm from './EditTransactionForm';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 
 const TransactionsHistory = () => {
@@ -29,6 +30,9 @@ const TransactionsHistory = () => {
     const [editingTransaction, setEditingTransaction] = useState(null); // To track the transaction being edited
     const [modalVisible, setModalVisible] = useState(false);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
 
     const toggleSidebar = () => {
@@ -73,33 +77,41 @@ const TransactionsHistory = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
                     <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
                         onPress={() => navigation.navigate('Homepage')}
                     >
 
-                        <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
+                        <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
+                        <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
                 <View>
-                    <Text style={styles.title}>{translations.TransactionsHistoryFHalf} <Text style={{
-                        fontSize: 24,
-                        fontFamily: "Montserrat-Light",
-                        fontWeight: 'light',
-                        color: '#000',
-                        marginBottom: 10
-                    }}>{translations.TransactionsHistorySHalf}</Text></Text>
+                    <Text style={[styles.title, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' }]}>{translations.TransactionsHistoryFHalf} <Text style={{
+                            fontSize: 24,
+                            fontFamily: "Montserrat-Light",
+                            fontWeight: 'light',
+                            marginBottom: 10,
+                            color: isDarkMode ? '#fff' : '#000',
+                        }}>{translations.TransactionsHistorySHalf}</Text></Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "column", gap: 15 }}>
 
@@ -117,7 +129,7 @@ const TransactionsHistory = () => {
                                     </TouchableOpacity>
                                 )}
                             >
-                                <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: '#F3F3F3', borderRadius: 12, padding: 15 }}>
+                                <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: isDarkMode ? '#112540' : '#F3F3F3', borderRadius: 12, padding: 15 }}>
                                     <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                                         <View style={[styles.transactionCard, { backgroundColor: transaction.color }]} >
                                             <Image
@@ -125,7 +137,7 @@ const TransactionsHistory = () => {
                                             />
                                         </View>
                                         <View style={{ display: "flex", flexDirection: "column", marginLeft: 12 }}>
-                                            <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{transaction.category}</Text>
+                                            <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{transaction.category}</Text>
                                             <Text style={{ color: "#A3A3A3", fontSize: 12, fontFamily: 'Montserrat-Bold' }}>{transaction.note || "No note"}</Text>
                                         </View>
                                     </View>

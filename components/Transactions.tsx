@@ -16,6 +16,7 @@ import Sidebar from './Sidebar';
 import { CategoryContext } from '../context/CategoryContext';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 const CircleVisualization = () => {
     const { categories, categoryTotals, totalAmount } = useContext(CategoryContext);
@@ -25,6 +26,10 @@ const CircleVisualization = () => {
     const centerX = 150;
     const centerY = 150;
     const circumference = 2 * Math.PI * radius;
+
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
     let startAngle = 0;
 
@@ -66,7 +71,7 @@ const CircleVisualization = () => {
                 alignmentBaseline="middle"
                 fontSize={24}
                 fontWeight="bold"
-                fill="#000"
+                fill={isDarkMode ? '#fff' : '#000'}
             >
                 {`zł ${totalAmount}`}
             </SvgText>
@@ -108,6 +113,10 @@ const Transactions = () => {
     const toggleSidebar = () => {
         setSidebarVisible(!isSidebarVisible);
     };
+
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
 
     const toggleBottomBar = () => {
@@ -214,27 +223,35 @@ const Transactions = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
-                    <Image source={require('../assets/logoHeader.png')} style={styles.logo} />
+                    <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
+                        ? { tintColor: '#112540' }
+                        : { tintColor: '#fff' }]} />
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
                 <View>
-                    <Text style={styles.title}>{translations.transactions}</Text>
+                    <Text style={[styles.title, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' }]}>{translations.transactions}</Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
                     <CircleVisualization />
                 </View>
                 <View style={{}}>
-                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.categoryExpediture}</Text>
+                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.categoryExpediture}</Text>
                     <View style={{ display: "flex", flexDirection: "column", gap: 8, }}>
                         {categories.map((cat, index) => {
                             const totalAmount = calculateTotalAmountForCategory(cat.name);
@@ -247,11 +264,11 @@ const Transactions = () => {
                                             )}
                                         </View>
                                         <View style={{ display: "flex", flexDirection: "column", marginLeft: 12, width: "70%", gap: 8 }}>
-                                            <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, }}>{cat.name}</Text>
+                                            <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, }}>{cat.name}</Text>
                                         </View>
                                     </View>
                                     <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                                        <Text style={{ color: "#1C26FF", fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>zł {totalAmount || 0}</Text>
+                                        <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>zł {totalAmount || 0}</Text>
                                     </View>
                                 </View>
                             );
@@ -260,10 +277,10 @@ const Transactions = () => {
                 </View>
 
                 <View style={{ marginTop: 30, marginBottom: 20 }}>
-                    <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%", height: 54, borderColor: "#1C26FF", borderWidth: 1, borderRadius: 30 }} onPress={toggleBottomBar}>
+                    <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%", height: 54, borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderWidth: 1, borderRadius: 30 }} onPress={toggleBottomBar}>
                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                            <Image source={require('../assets/plusBlue.png')} style={{}} />
-                            <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginLeft: 7 }}>{translations.addCategoryButton}</Text>
+                            <Image source={require('../assets/plusBlue.png')} style={{ tintColor: isDarkMode ? '#10CDFC' : '#1C26FF' }} />
+                            <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginLeft: 7 }}>{translations.addCategoryButton}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -272,20 +289,25 @@ const Transactions = () => {
             {/* Bottom Bar */}
             {isBottomBarVisible && (
                 <Animated.View style={[
-                    styles.bottomBar,
+                    styles.bottomBar, isDarkMode
+                        ? { backgroundColor: '#112540' }
+                        : { backgroundColor: '#fff' },
                     {
                         transform: [{ translateY: bottomBarAnim }], // Apply animation
                     },
                 ]}>
-                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#fff", marginBottom: 20, }}>
-                        <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addCategoryButton}</Text>
+                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
+                        <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addCategoryButton}</Text>
                         <TouchableOpacity onPress={toggleBottomBar}>
-                            <Image source={require('../assets/x.png')} />
+                            <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000' }} />
                         </TouchableOpacity>
                     </View>
 
                     <TextInput
-                        style={styles.input}
+                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                        style={[styles.input, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}
                         placeholder={translations.categoryName}
                         value={categoryName}
                         onChangeText={setCategoryName}
@@ -314,7 +336,9 @@ const Transactions = () => {
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
-                    <TouchableOpacity style={styles.saveButton} onPress={addCategory}>
+                    <TouchableOpacity style={[styles.saveButton, isDarkMode
+                        ? { backgroundColor: '#10CDFC' }
+                        : { backgroundColor: '#1C26FF' }]} onPress={addCategory}>
                         <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                     </TouchableOpacity>
                 </Animated.View>

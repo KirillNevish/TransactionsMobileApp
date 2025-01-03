@@ -82,6 +82,9 @@ type Translations = {
     retirementPlanningTip: string;
     retirementPlanningTipText: string;
 
+    lightMode: string;
+    darkMode: string;
+
     monthNames: string[];
     monthNamesShort: string[];
     dayNames: string[];
@@ -211,6 +214,9 @@ const translations: TranslationMap = {
         retirementPlanningTip: 'Planowanie emerytalne:',
         retirementPlanningTipText: ' Rozważ swoje cele emerytalne i opracuj plan oszczędzania lub inwestowania, który pomoże Ci osiągnąć te cele. Im wcześniej zaczniesz odkładać na emeryturę, tym większe będą Twoje szanse na zabezpieczenie się na przyszłość.',
 
+        lightMode: 'Tryb światła',
+        darkMode: 'Tryb ciemny',
+
         monthNames: [
             'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
             'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień',
@@ -328,6 +334,9 @@ const translations: TranslationMap = {
         retirementPlanningTip: 'Retirement planning:',
         retirementPlanningTipText: 'Consider your retirement goals and develop a savings or investment plan that will help you achieve those goals. The earlier you start saving for retirement, the better your chances of securing your future.',
 
+        lightMode: 'Light mode',
+        darkMode: 'Dark mode',
+
         monthNames: [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December',
@@ -444,6 +453,9 @@ const translations: TranslationMap = {
 
         retirementPlanningTip: 'Пенсійне планування:',
         retirementPlanningTipText: 'Подумайте про свої цілі щодо виходу на пенсію та розробіть план заощаджень або інвестицій, який допоможе вам досягти цих цілей. Чим раніше ви почнете відкладати гроші на пенсію, тим більше у вас шансів забезпечити своє майбутнє',
+
+        lightMode: 'Світлий режим',
+        darkMode: 'Темний режим',
 
         monthNames: [
             'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень',

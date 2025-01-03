@@ -18,37 +18,40 @@ import { GoalProvider } from './context/GoalContext';
 import Savings from './components/Savings';
 import Settings from './components/Settings';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 const Stack = createStackNavigator();
 
 const App: React.FC = () => {
   return (
-    <LanguageProvider>
-      <GoalProvider>
-        <CategoryProvider>
-          <NewestTransactionsProvider>
-            <BalanceProvider>
-              <NavigationContainer>
-                <Stack.Navigator initialRouteName="Loading" screenOptions={{ headerShown: false }}>
-                  <Stack.Screen name="Loading" component={LoadingScreen} />
-                  <Stack.Screen name="Onboarding" component={Onboarding} />
-                  <Stack.Screen name="Homepage" component={Homepage} />
-                  <Stack.Screen name="TotalBalance" component={TotalBalance} />
-                  <Stack.Screen name="Transactions" component={Transactions} />
-                  <Stack.Screen name="Tips" component={Tips} />
-                  <Stack.Screen name="NewTransaction" component={NewTransaction} />
-                  <Stack.Screen name="TransactionsHistory" component={TransactionsHistory} />
-                  <Stack.Screen name="CalendarScreen" component={CalendarScreen} />
-                  <Stack.Screen name="NewGoal" component={NewGoal} />
-                  <Stack.Screen name="Savings" component={Savings} />
-                  <Stack.Screen name="Settings" component={Settings} />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </BalanceProvider>
-          </NewestTransactionsProvider>
-        </CategoryProvider>
-      </GoalProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <GoalProvider>
+          <CategoryProvider>
+            <NewestTransactionsProvider>
+              <BalanceProvider>
+                <NavigationContainer>
+                  <Stack.Navigator initialRouteName="Loading" screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="Loading" component={LoadingScreen} />
+                    <Stack.Screen name="Onboarding" component={Onboarding} />
+                    <Stack.Screen name="Homepage" component={Homepage} />
+                    <Stack.Screen name="TotalBalance" component={TotalBalance} />
+                    <Stack.Screen name="Transactions" component={Transactions} />
+                    <Stack.Screen name="Tips" component={Tips} />
+                    <Stack.Screen name="NewTransaction" component={NewTransaction} />
+                    <Stack.Screen name="TransactionsHistory" component={TransactionsHistory} />
+                    <Stack.Screen name="CalendarScreen" component={CalendarScreen} />
+                    <Stack.Screen name="NewGoal" component={NewGoal} />
+                    <Stack.Screen name="Savings" component={Savings} />
+                    <Stack.Screen name="Settings" component={Settings} />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </BalanceProvider>
+            </NewestTransactionsProvider>
+          </CategoryProvider>
+        </GoalProvider>
+      </LanguageProvider>
+    </ThemeProvider>
 
   );
 };

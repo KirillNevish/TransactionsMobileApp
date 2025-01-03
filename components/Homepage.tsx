@@ -15,6 +15,7 @@ import { NewestTransactionsContext } from '../context/NewestTransactionsContext'
 import { GoalContext } from '../context/GoalContext';
 import CircularVisualization from './CircularVisualization';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 
 function Homepage() {
@@ -23,6 +24,10 @@ function Homepage() {
     const navigation = useNavigation();
     const { cardBalance, cashBalance, loadData } = useBalance();
     const { translations } = useLanguage();
+
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
 
 
@@ -51,51 +56,57 @@ function Homepage() {
     }, []);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, isDarkMode
+            ? { backgroundColor: '#112540' }
+            : { backgroundColor: '#fff' }]}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
-                    <Image source={require('../assets/logoHeader.png')} style={styles.logo} />
+                    <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
+                        ? { tintColor: '#112540' }
+                        : { tintColor: '#fff' }]} />
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
             <ScrollView showsVerticalScrollIndicator={false} style={styles.contentBlock}>
                 <View>
-                    <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.totalBalance}</Text>
+                    <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10, color: isDarkMode ? '#fff' : '#000' }}>{translations.totalBalance}</Text>
 
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
                     <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 9 }}>
-                        <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{(cardBalance + cashBalance).toFixed(2)} zł</Text>
+                        <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{(cardBalance + cashBalance).toFixed(2)} zł</Text>
                         <Text style={{ color: "#A3A3A3", fontSize: 20, fontFamily: 'Montserrat-Light' }}>{translations.card}</Text>
-                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{cardBalance.toFixed(2)} zł</Text>
+                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{cardBalance.toFixed(2)} zł</Text>
                     </View>
                     <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                        <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 20, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center" }}
+                        <TouchableOpacity style={{ borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 20, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center" }}
                             onPress={() => navigation.navigate('TotalBalance')}
                         >
-                            <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginRight: 10 }}>{translations.editButton}</Text>
-                            <Image source={require('../assets/Vector.png')} style={{}} />
+                            <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginRight: 10 }}>{translations.editButton}</Text>
+                            <Image source={require('../assets/Vector.png')} style={{ tintColor: isDarkMode ? '#10CDFC' : '#1C26FF' }} />
                         </TouchableOpacity>
                         <Text style={{ color: "#A3A3A3", fontSize: 20, fontFamily: 'Montserrat-Light' }}>{translations.cash}</Text>
-                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{cashBalance.toFixed(2)} zł</Text>
+                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{cashBalance.toFixed(2)} zł</Text>
                     </View>
                 </View>
                 <View>
-                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.savings}</Text>
+                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10, color: isDarkMode ? '#fff' : '#000' }}>{translations.savings}</Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
                     {goalData ? (
                         <View style={{ borderRadius: 16, minWidth: 175, width: '80%', height: 130, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.08, }}>
                             <TouchableOpacity style={{ marginVertical: 7, display: "flex", alignItems: "flex-end", width: "80%" }} onPress={() => navigation.navigate('Savings')}>
-                                <Image source={require('../assets/Vector.png')} style={{}} />
+                                <Image source={require('../assets/Vector.png')} style={{ tintColor: isDarkMode ? '#10CDFC' : '#1C26FF' }} />
                             </TouchableOpacity>
                             <View style={{ display: "flex", flexDirection: "row", flexWrap: "nowrap" }}>
                                 <View style={{ display: "flex", flexDirection: "column", marginLeft: 4, gap: 6, minWidth: 90, width: "63%", alignItems: "center" }}>
-                                    <Text style={{ fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{goalData.accumulation}</Text>
+                                    <Text style={{ fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{goalData.accumulation}</Text>
                                     <Text style={{ color: "#A3A3A3", fontSize: 16, fontFamily: 'Montserrat-Bold' }}>{translations.cumulative} </Text>
                                     <Text style={{ color: "#22D9A0", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{goalData.currentProgress} zł</Text>
                                 </View>
@@ -109,7 +120,7 @@ function Homepage() {
                         </View>
                     ) : (
                         <View style={{ borderRadius: 16, width: 175, height: 130, boxShadow: "rgba(65, 65, 65, 0.08)", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                            <TouchableOpacity style={{ borderRadius: 25, backgroundColor: "#1C26FF", padding: 15, display: "flex", justifyContent: "center", alignItems: "center" }} onPress={() => navigation.navigate('NewGoal')}>
+                            <TouchableOpacity style={{ borderRadius: 25, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', padding: 15, display: "flex", justifyContent: "center", alignItems: "center" }} onPress={() => navigation.navigate('NewGoal')}>
                                 <Image source={require('../assets/Add.png')} style={{}} />
                             </TouchableOpacity>
                         </View>
@@ -120,10 +131,12 @@ function Homepage() {
                         <Image source={require('../assets/boy.png')} style={{ resizeMode: 'contain', height: 220 }} />
                     </View>
                     <View style={{ display: "flex", flexDirection: "column", width: "60%", gap: 10, left: -25 }}>
-                        <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.financialLiteracyTips}</Text>
-                        <Text style={{ color: "112540", fontSize: 13, fontFamily: 'Montserrat-Light' }}>{translations.tipsThatMightBeHelpful}</Text>
+                        <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.financialLiteracyTips}</Text>
+                        <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 13, fontFamily: 'Montserrat-Light' }}>{translations.tipsThatMightBeHelpful}</Text>
                         <View style={{ display: "flex", alignItems: "center" }}>
-                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Tips')}>
+                            <TouchableOpacity style={[styles.button, isDarkMode
+                                ? { backgroundColor: '#10CDFC' }
+                                : { backgroundColor: '#1C26FF' }]} onPress={() => navigation.navigate('Tips')}>
                                 <Text style={styles.buttonText}>
                                     {translations.readButton}
                                 </Text>
@@ -133,10 +146,10 @@ function Homepage() {
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                     <View style={{ display: "flex", flexDirection: 'row' }}>
-                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.TransactionsHistoryFHalf}  </Text><Text style={{ fontSize: 17, fontFamily: 'Montserrat-Light', marginLeft: -5 }}>{translations.TransactionsHistorySHalf}</Text>
+                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{translations.TransactionsHistoryFHalf}  </Text><Text style={{ fontSize: 17, fontFamily: 'Montserrat-Light', marginLeft: -5, color: isDarkMode ? '#fff' : '#000' }}>{translations.TransactionsHistorySHalf}</Text>
                     </View>
-                    <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center" }} onPress={() => navigation.navigate('TransactionsHistory')}>
-                        <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.viewAllButton}</Text>
+                    <TouchableOpacity style={{ borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center" }} onPress={() => navigation.navigate('TransactionsHistory')}>
+                        <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.viewAllButton}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{ display: 'flex', flexDirection: "column", gap: 8, marginBottom: 10 }}>
@@ -151,7 +164,7 @@ function Homepage() {
                                         />
                                     </View>
                                     <View style={{ display: "flex", flexDirection: "column", marginLeft: 12 }}>
-                                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{transaction.category}</Text>
+                                        <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{transaction.category}</Text>
                                         <Text style={{ color: "#A3A3A3", fontSize: 12, fontFamily: 'Montserrat-Bold' }}>{transaction.note || "No note"}</Text>
                                     </View>
                                 </View>

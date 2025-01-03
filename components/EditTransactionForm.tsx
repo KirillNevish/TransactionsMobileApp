@@ -12,6 +12,7 @@ import { Picker } from '@react-native-picker/picker';
 import { CategoryContext } from '../context/CategoryContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface Transaction {
     id: string;
@@ -43,6 +44,9 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
     const [note, setNote] = useState(transaction.note);
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
     const currentYear = new Date().getFullYear();
 
@@ -82,11 +86,13 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
     };
 
     return (
-        <View style={styles.modalContainer}>
-            <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#fff", marginBottom: 20, }}>
-                <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.editTransactionText}</Text>
+        <View style={[styles.modalContainer, isDarkMode
+            ? { backgroundColor: '#112540' }
+            : { backgroundColor: '#fff' }]}>
+            <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
+                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.editTransactionText}</Text>
                 <TouchableOpacity onPress={onCancel}>
-                    <Image source={require('../assets/x.png')} />
+                    <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000', }} />
                 </TouchableOpacity>
             </View>
             <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.category}</Text>
@@ -102,7 +108,7 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
                     onValueChange={handleCategoryChange}
                 >
                     {categories.map((cat, index) => (
-                        <Picker.Item key={index} label={cat.name} value={cat.name} />
+                        <Picker.Item key={index} label={cat.name} value={cat.name} style={{ color: "#76787A" }} />
                     ))}
                 </Picker>
             </View>
@@ -118,7 +124,7 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
 
                 }}
             >
-                <Text>{date || `${currentYear}-00-00`}</Text>
+                <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{date || `${currentYear}-00-00`}</Text>
             </TouchableOpacity>
             <DateTimePickerModal
                 isVisible={isDatePickerVisible}
@@ -127,8 +133,12 @@ const EditTransactionForm: React.FC<EditTransactionFormProps> = ({
                 onCancel={hideDatePicker}
             />
             <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
-            <TextInput value={note} onChangeText={setNote} style={styles.input} />
-            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+            <TextInput value={note} placeholderTextColor={isDarkMode ? '#fff' : '#000'} onChangeText={setNote} style={[styles.input, isDarkMode
+                ? { color: '#fff' }
+                : { color: '#000' },]} />
+            <TouchableOpacity onPress={handleSave} style={[styles.saveButton, isDarkMode
+                ? { backgroundColor: '#10CDFC' }
+                : { backgroundColor: '#1C26FF' }]}>
                 <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
             </TouchableOpacity>
         </View>

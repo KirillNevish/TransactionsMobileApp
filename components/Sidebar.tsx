@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 interface SidebarProps {
     isVisible: boolean; // Boolean to control visibility
@@ -19,6 +20,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
     const slideAnim = useRef(new Animated.Value(-300)).current; // Start off-screen (-300px)
     const navigation = useNavigation(); // Access navigation
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
 
 
     useEffect(() => {
@@ -37,14 +40,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
     return (
         <Animated.View
             style={[
-                styles.sidebarContainer,
+                styles.sidebarContainer, isDarkMode
+                    ? { backgroundColor: '#112540' }
+                    : { backgroundColor: '#fff' },
                 { transform: [{ translateX: slideAnim }] }, // Animate horizontal position
             ]}
         >
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                <Text style={styles.closeText}>X</Text>
+                <Text style={[styles.closeText, isDarkMode
+                    ? { color: '#fff' }
+                    : { color: '#000' }]}>X</Text>
             </TouchableOpacity>
-            <Text style={styles.userName}>{translations.Sidebar}</Text>
+            <Text style={[styles.userName, isDarkMode
+                ? { color: '#fff' }
+                : { color: '#000' }]}>{translations.Sidebar}</Text>
             <View style={styles.menuItems}>
                 {[
                     { label: `${translations.homepage}`, screen: 'Homepage' },
@@ -61,13 +70,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose }) => {
                         style={styles.menuItem}
                         onPress={() => handleNavigate(item.screen)}
                     >
-                        <Text style={styles.menuText}>{item.label}</Text>
-                        <Image source={require('../assets/LeftArrow.png')} style={{}} />
+                        <Text style={[styles.menuText, isDarkMode
+                            ? { color: '#10CDFC' }
+                            : { color: '#1C26FF' }]}>{item.label}</Text>
+                        <Image source={require('../assets/LeftArrow.png')} style={{ tintColor: isDarkMode ? '#10CDFC' : '#1C26FF', }} />
                     </TouchableOpacity>
                 ))}
             </View>
             <View style={styles.logoContainer}>
-                <Image source={require('../assets/logo.png')} style={styles.logo} />
+                <Image source={require('../assets/logo.png')} style={[styles.logo, isDarkMode
+                    ? { tintColor: '#10CDFC' }
+                    : { tintColor: '#1C26FF' }]} />
             </View>
         </Animated.View>
     );

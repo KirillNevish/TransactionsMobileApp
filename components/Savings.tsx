@@ -9,6 +9,7 @@ import { CategoryContext } from '../context/CategoryContext';
 import UpDown from '../assets/UpDown.png';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 
 const Savings = () => {
@@ -29,6 +30,9 @@ const Savings = () => {
     const [isFinishDatePickerVisible, setFinishDatePickerVisible] = useState(false);
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
     const showStartDatePicker = () => setStartDatePickerVisible(true);
     const hideStartDatePicker = () => setStartDatePickerVisible(false);
@@ -185,48 +189,62 @@ const Savings = () => {
     // Show message if no goal exists
     if (!goalData) {
         return (
-            <TouchableOpacity style={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}
+            <TouchableOpacity style={{ backgroundColor: isDarkMode ? '#112540' : '#fff', flex: 1, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}
                 onPress={() => navigation.navigate('Homepage')}
             >
-                <Text style={styles.noGoalMessage}>{translations.createAGoalText}</Text>
+                <Text style={[styles.noGoalMessage, isDarkMode
+                    ? { color: '#fff' }
+                    : { color: '#000' }]}>{translations.createAGoalText}</Text>
             </TouchableOpacity>
         );
     }
 
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
                     <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
                         onPress={() => navigation.navigate('Homepage')}
                     >
 
-                        <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
+                        <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
+                        <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
                 <View>
-                    <Text style={styles.title}>{translations.savings}</Text>
+                    <Text style={[styles.title, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' }]}>{translations.savings}</Text>
                 </View>
                 <View style={{ height: 90, }}>
                     <View style={styles.progressBarWrapper}>
                         <View style={styles.progressBarBackground}>
-                            <View style={[styles.progressBarIndicator, { width: `${calculateProgressPercentage()}%` }]} />
+                            <View style={[styles.progressBarIndicator, isDarkMode
+                                ? { backgroundColor: '#10CDFC' }
+                                : { backgroundColor: '#1C26FF' }, { width: `${calculateProgressPercentage()}%` }]} />
                         </View>
-                        <Text style={styles.progressLabel}>{currentProgress} zł / {goalAmount} zł</Text>
+                        <Text style={[styles.progressLabel, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}>{currentProgress} zł / {goalAmount} zł</Text>
                     </View>
                 </View>
-                <TouchableOpacity style={{ borderColor: "#1C26FF", borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", marginVertical: 20, maxWidth: 120, }} onPress={toggleBottomBar}>
-                    <Text style={{ color: "#1C26FF", fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.topUpButton}</Text>
+                <TouchableOpacity style={{ borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", marginVertical: 20, maxWidth: 120, }} onPress={toggleBottomBar}>
+                    <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.topUpButton}</Text>
                 </TouchableOpacity>
                 <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.AccumulationPurpose}</Text>
                 <TextInput
@@ -235,9 +253,11 @@ const Savings = () => {
                         borderColor: '#ccc',
                         borderRadius: 10,
                         padding: 10,
-                        marginBottom: 20
+                        marginBottom: 20,
+                        color: isDarkMode ? '#fff' : '#000',
                     }}
                     value={accumulation}
+                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     onChangeText={setAccumulation}
                     placeholder="Cel"
                 />
@@ -249,7 +269,10 @@ const Savings = () => {
                 <View style={styles.inputWrapper}>
                     <Text style={styles.currencySymbol}>zł</Text>
                     <TextInput
-                        style={styles.numericInput}
+                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                        style={[styles.numericInput, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}
                         keyboardType="numeric"
                         value={goalAmount}
                         onChangeText={(text) => handleAmountInput(text, setGoalAmount)}
@@ -268,9 +291,10 @@ const Savings = () => {
                                 borderColor: '#ccc',
                                 borderRadius: 10,
                                 padding: 10,
+                                width: 100
                             }}
                         >
-                            <Text>{startDate || `${currentYear}-00-00`}</Text>
+                            <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{startDate || `${currentYear}-00-00`}</Text>
                         </TouchableOpacity>
                     </View>
                     <DateTimePickerModal
@@ -288,10 +312,11 @@ const Savings = () => {
                                 borderWidth: 1,
                                 borderColor: '#ccc',
                                 borderRadius: 10,
-                                padding: 10
+                                padding: 10,
+                                width: 100
                             }}
                         >
-                            <Text>{finishDate || `0000-00-00`}</Text>
+                            <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{finishDate || `0000-00-00`}</Text>
                         </TouchableOpacity>
                     </View>
                     <DateTimePickerModal
@@ -312,14 +337,17 @@ const Savings = () => {
                         borderColor: '#ccc',
                         borderRadius: 10,
                         padding: 10,
-                        marginBottom: 20
+                        marginBottom: 20,
+                        color: isDarkMode ? '#fff' : '#000',
                     }}
                     value={goalNote}
                     onChangeText={setGoalNote}
                 />
 
                 {/* Save Button */}
-                <TouchableOpacity style={styles.saveButton} onPress={saveGoal} >
+                <TouchableOpacity style={[styles.saveButton, isDarkMode
+                    ? { backgroundColor: '#10CDFC' }
+                    : { backgroundColor: '#1C26FF' }]} onPress={saveGoal} >
                     <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </ScrollView>
@@ -327,15 +355,17 @@ const Savings = () => {
             {/* Bottom Bar */}
             {isBottomBarVisible && (
                 <Animated.View style={[
-                    styles.bottomBar,
+                    styles.bottomBar, isDarkMode
+                        ? { backgroundColor: '#112540' }
+                        : { backgroundColor: '#fff' },
                     {
                         transform: [{ translateY: bottomBarAnim }], // Apply animation
                     },
                 ]}>
-                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", borderWidth: 1, borderColor: "#fff", marginBottom: 20, }}>
-                        <Text style={{ fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addtopUpText}</Text>
+                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
+                        <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addtopUpText}</Text>
                         <TouchableOpacity onPress={toggleBottomBar}>
-                            <Image source={require('../assets/x.png')} />
+                            <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000', }} />
                         </TouchableOpacity>
                     </View>
                     <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
@@ -343,7 +373,10 @@ const Savings = () => {
                     <View style={styles.inputWrapper}>
                         <Text style={styles.currencySymbol}>zł</Text>
                         <TextInput
-                            style={styles.numericInput}
+                            placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                            style={[styles.numericInput, isDarkMode
+                                ? { color: '#fff' }
+                                : { color: '#000' }]}
                             keyboardType="numeric"
                             value={amount}
                             onChangeText={(text) => handleAmountInput(text, setAmount)}
@@ -356,10 +389,12 @@ const Savings = () => {
                         style={styles.input}
                         onPress={() => setDatePickerVisible(true)}
                     >
-                        <Text>{date || `${currentYear}-00-00`}</Text>
+                        <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{date || `${currentYear}-00-00`}</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.saveButton} onPress={saveAmount}>
+                    <TouchableOpacity style={[styles.saveButton, isDarkMode
+                        ? { backgroundColor: '#10CDFC' }
+                        : { backgroundColor: '#1C26FF' }]} onPress={saveAmount}>
                         <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                     </TouchableOpacity>
                 </Animated.View>
@@ -379,8 +414,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: "#fff",
     },
     title: {
         fontSize: 24,

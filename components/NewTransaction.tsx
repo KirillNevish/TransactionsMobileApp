@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBalance } from '../context/BalanceContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 
 const NewTransaction = () => {
@@ -22,6 +23,9 @@ const NewTransaction = () => {
     const { cardBalance, setCardBalance, cashBalance, setCashBalance } = useBalance();
     const [isDatePickerVisible, setDatePickerVisible] = useState(false);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
     const handleConfirmDate = (date) => {
         setDate(date.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
@@ -120,21 +124,29 @@ const NewTransaction = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
-                    <Image source={require('../assets/logoHeader.png')} style={styles.logo} />
+                    <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
+                        ? { tintColor: '#112540' }
+                        : { tintColor: '#fff' }]} />
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
                 <View>
-                    <Text style={styles.title}>{translations.newTransaction}</Text>
+                    <Text style={[styles.title, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' }]}>{translations.newTransaction}</Text>
                 </View>
                 <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.category}</Text>
 
@@ -186,11 +198,14 @@ const NewTransaction = () => {
                 <View style={styles.inputWrapper}>
                     <Text style={styles.currencySymbol}>zł</Text>
                     <TextInput
-                        style={styles.numericInput}
+                        style={[styles.numericInput, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}
                         keyboardType="numeric"
                         value={amount}
                         onChangeText={handleAmountInput}
                         placeholder="0"
+                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     />
                 </View>
 
@@ -200,7 +215,7 @@ const NewTransaction = () => {
                     style={styles.input}
                     onPress={() => setDatePickerVisible(true)}
                 >
-                    <Text>{date || `${currentYear}-00-00`}</Text>
+                    <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>{date || `${currentYear}-00-00`}</Text>
                 </TouchableOpacity>
 
                 {/* Note */}
@@ -211,13 +226,16 @@ const NewTransaction = () => {
                         borderColor: '#ccc',
                         borderRadius: 10,
                         padding: 10,
+                        color: isDarkMode ? '#fff' : '#000'
                     }}
                     value={note}
                     onChangeText={setNote}
                 />
 
                 {/* Save Button */}
-                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <TouchableOpacity style={[styles.saveButton, isDarkMode
+                    ? { backgroundColor: '#10CDFC' }
+                    : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
                     <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </ScrollView>
@@ -237,8 +255,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: "#fff",
     },
     title: {
         fontSize: 20,

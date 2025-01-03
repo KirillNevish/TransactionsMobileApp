@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Sidebar from './Sidebar';
 import { useBalance } from '../context/BalanceContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 const TotalBalance = () => {
     const navigation = useNavigation();
@@ -24,6 +25,9 @@ const TotalBalance = () => {
     const [cardInput, setCardInput] = useState<string>('');
     const [isSidebarVisible, setSidebarVisible] = useState(false);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
+
 
     useEffect(() => {
         loadData(); // Load data when component mounts
@@ -74,30 +78,40 @@ const TotalBalance = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
                     <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
                         onPress={() => navigation.navigate('Homepage')}
                     >
 
-                        <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
+                        <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
+                        <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            <View style={styles.container}>
+            <View style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
 
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
                     <View>
-                        <Text style={styles.title}>{translations.totalBalance}</Text>
-                        <Text style={styles.totalBalance}>
+                        <Text style={[styles.title, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}>{translations.totalBalance}</Text>
+                        <Text style={[styles.totalBalance, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}>
                             {/* {cardBalance + cashBalance} zł */}
                             {(cardBalance + cashBalance).toFixed(2)} zł
                         </Text>
@@ -110,45 +124,63 @@ const TotalBalance = () => {
                 <View style={styles.balanceRow}>
                     <View>
                         <Text style={styles.balanceTitle}>{translations.card}</Text>
-                        <Text style={styles.balanceValue}>{cardBalance.toFixed(2)} zł</Text>
+                        <Text style={[styles.balanceValue, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}>{cardBalance.toFixed(2)} zł</Text>
                     </View>
                     <View style={{ alignItems: "flex-end" }}>
                         <Text style={styles.balanceTitle}>{translations.cash}</Text>
-                        <Text style={styles.balanceValue}>{cashBalance.toFixed(2)} zł</Text>
+                        <Text style={[styles.balanceValue, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}>{cashBalance.toFixed(2)} zł</Text>
                     </View>
                 </View>
 
                 {/* Editable inputs */}
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' },]}
+                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     placeholder={translations.profit}
                     value={profit}
                     keyboardType="numeric"
                     onChangeText={text => setProfit(text)}
                 />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' },]}
+                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     placeholder={translations.otherIncome}
                     value={otherIncome}
                     keyboardType="numeric"
                     onChangeText={text => setOtherIncome(text)}
                 />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' },]}
+                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     placeholder={translations.cash}
                     value={cashInput}
                     keyboardType="numeric"
                     onChangeText={text => setCashInput(text)}
                 />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' },]}
+                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     placeholder={translations.card}
                     value={cardInput}
                     keyboardType="numeric"
                     onChangeText={text => setCardInput(text)}
                 />
 
-                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <TouchableOpacity style={[styles.saveButton, isDarkMode
+                    ? { backgroundColor: '#10CDFC' }
+                    : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
                     <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </View>

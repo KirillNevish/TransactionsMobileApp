@@ -13,58 +13,79 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import Sidebar from './Sidebar';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 const Settings = () => {
     const navigation = useNavigation();
     const { translations, changeLanguage, language } = useLanguage();
     const [isSidebarVisible, setSidebarVisible] = useState(false);
 
+    const { theme, toggleTheme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
+
     const toggleSidebar = () => {
         setSidebarVisible(!isSidebarVisible);
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
                     <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
                         onPress={() => navigation.navigate('Homepage')}
                     >
 
-                        <Image source={require('../assets/rightArrow.png')} style={{}} />
-                        <Text style={{ color: "#fff", fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
+                        <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
+                        <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={styles.menu} />
+                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                            ? { tintColor: '#112540' }
+                            : { tintColor: '#fff' }]} />
                     </TouchableOpacity>
 
                 </View>
             </View>
 
-            <View style={styles.container}>
+            <View style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
                 <View>
-                    <Text style={styles.title}>{translations.settings}</Text>
+                    <Text style={[styles.title, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' }]}>{translations.settings}</Text>
                 </View>
                 <View style={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
                     <View style={{ display: "flex", flexDirection: "column", }}>
-                        <Text style={styles.languageLabel}>{translations.language}</Text>
+                        <Text style={[styles.languageLabel, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}>{translations.language}</Text>
 
                         <View style={styles.languageSwitcher}>
                             <TouchableOpacity
-                                style={[styles.languageButton, language === 'pl' && styles.activeButton]}
+                                style={[styles.languageButton, language === 'pl' && styles.activeButton, language === 'pl' && {
+                                    backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF',
+                                },]}
                                 onPress={() => changeLanguage('pl')}
                             >
                                 <Text style={styles.languageText}>{translations.polish}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.languageButton, language === 'en' && styles.activeButton]}
+                                style={[styles.languageButton, language === 'en' && styles.activeButton, language === 'en' && {
+                                    backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF',
+                                },]}
                                 onPress={() => changeLanguage('en')}
                             >
                                 <Text style={styles.languageText}>{translations.english}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.languageButton, language === 'uk' && styles.activeButton]}
+                                style={[styles.languageButton, language === 'uk' && styles.activeButton, language === 'uk' && {
+                                    backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF',
+                                },]}
                                 onPress={() => changeLanguage('uk')}
                             >
                                 <Text style={styles.languageText}>{translations.ukrainian} </Text>
@@ -73,6 +94,13 @@ const Settings = () => {
                     </View>
 
                 </View>
+                <TouchableOpacity style={[styles.themeToggle, isDarkMode
+                    ? { backgroundColor: '#10CDFC' }
+                    : { backgroundColor: '#1C26FF' }]} onPress={toggleTheme}>
+                    <Text style={styles.themeToggleText}>
+                        {isDarkMode ? translations.lightMode : translations.darkMode}
+                    </Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -82,9 +110,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: "#fff",
+        backgroundColor: '#fff'
     },
     title: {
         fontSize: 24,
@@ -120,12 +146,11 @@ const styles = StyleSheet.create({
     languageSwitcher: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        gap: 20
     },
     languageButton: {
         padding: 10,
         borderRadius: 5,
-        borderWidth: 1,
-        borderColor: '#ccc',
         backgroundColor: "#A3A3A3",
     },
     activeButton: {
@@ -134,7 +159,9 @@ const styles = StyleSheet.create({
     },
     languageText: {
         color: '#fff',
-    }
+    },
+    themeToggle: { marginTop: 20, padding: 15, backgroundColor: '#1C26FF', borderRadius: 10 },
+    themeToggleText: { color: '#fff', textAlign: 'center' },
 });
 
 export default Settings;

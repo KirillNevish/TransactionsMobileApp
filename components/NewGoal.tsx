@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GoalContext } from '../context/GoalContext';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 
 
 const NewGoal = () => {
@@ -19,6 +20,9 @@ const NewGoal = () => {
     const navigation = useNavigation();
     const { setGoalData } = useContext(GoalContext);
     const { translations } = useLanguage();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
 
     const currentYear = new Date().getFullYear();
 
@@ -66,7 +70,7 @@ const NewGoal = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ height: 120, backgroundColor: "#1C26FF", display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
                 <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
@@ -84,9 +88,13 @@ const NewGoal = () => {
                 </View>
             </View>
 
-            <View style={styles.container}>
+            <View style={[styles.container, isDarkMode
+                ? { backgroundColor: '#112540' }
+                : { backgroundColor: '#fff' }]}>
                 <View>
-                    <Text style={styles.title}>{translations.newGoal}</Text>
+                    <Text style={[styles.title, isDarkMode
+                        ? { color: '#fff' }
+                        : { color: '#000' }]}>{translations.newGoal}</Text>
                 </View>
                 <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.AccumulationPurpose}</Text>
                 <TextInput
@@ -95,8 +103,10 @@ const NewGoal = () => {
                         borderColor: '#ccc',
                         borderRadius: 10,
                         padding: 10,
-                        marginBottom: 20
+                        marginBottom: 20,
+                        color: isDarkMode ? '#fff' : '#000',
                     }}
+                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     value={accumulation}
                     onChangeText={setAccumulation}
                     placeholder="Cel"
@@ -109,11 +119,14 @@ const NewGoal = () => {
                 <View style={styles.inputWrapper}>
                     <Text style={styles.currencySymbol}>zł</Text>
                     <TextInput
-                        style={styles.numericInput}
+                        style={[styles.numericInput, isDarkMode
+                            ? { color: '#fff' }
+                            : { color: '#000' }]}
                         keyboardType="numeric"
                         value={goalAmount}
                         onChangeText={handleAmountInput}
                         placeholder="0"
+                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
                     />
                 </View>
 
@@ -127,11 +140,12 @@ const NewGoal = () => {
                                 borderColor: '#ccc',
                                 borderRadius: 10,
                                 padding: 10,
-                                marginBottom: 20
+                                marginBottom: 20,
+                                width: 100
                             }}
                             onPress={() => setStartDatePickerVisible(true)}
                         >
-                            <Text>{startDate || `${currentYear}-00-00`}</Text>
+                            <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{startDate || `${currentYear}-00-00`}</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -145,11 +159,12 @@ const NewGoal = () => {
                                 borderColor: '#ccc',
                                 borderRadius: 10,
                                 padding: 10,
-                                marginBottom: 20
+                                marginBottom: 20,
+                                width: 100
                             }}
                             onPress={() => setFinishDatePickerVisible(true)}
                         >
-                            <Text>{finishDate || `${currentYear}-00-00`}</Text>
+                            <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{finishDate || `${currentYear}-00-00`}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -164,13 +179,16 @@ const NewGoal = () => {
                         borderColor: '#ccc',
                         borderRadius: 10,
                         padding: 10,
+                        color: isDarkMode ? '#fff' : '#000',
                     }}
                     value={goalNote}
                     onChangeText={setGoalNote}
                 />
 
                 {/* Save Button */}
-                <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <TouchableOpacity style={[styles.saveButton, isDarkMode
+                    ? { backgroundColor: '#10CDFC' }
+                    : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
                     <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
                 </TouchableOpacity>
             </View>
@@ -195,8 +213,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: "#fff",
     },
     title: {
         fontSize: 24,

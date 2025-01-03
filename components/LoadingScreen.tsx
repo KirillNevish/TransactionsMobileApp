@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useTheme } from '../context/ThemeContext';
 
 type RootStackParamList = {
     Loading: undefined;
@@ -15,6 +16,8 @@ type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Load
 const LoadingScreen: React.FC = () => {
     const [progress, setProgress] = useState<number>(0); // Progress percentage
     const animation = new Animated.Value(progress);
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
     const navigation = useNavigation<LoadingScreenNavigationProp>();
 
     useEffect(() => {
@@ -57,30 +60,41 @@ const LoadingScreen: React.FC = () => {
         }).start();
     }, [progress]);
 
-    const getBoxStyle = (index: number) => {
+    const getBoxStyle = (index: number, isDarkMode: boolean) => {
         const thresholds = [20, 45, 65, 85, 100];
         return {
-            backgroundColor: progress >= thresholds[index] ? '#1C26FF' : '#D9D9D9', // Light or dark
+            backgroundColor: progress >= thresholds[index] ? isDarkMode
+                ? '#10CDFC' // Dark mode active color
+                : '#1C26FF'
+                : '#D9D9D9', // Light or dark
         };
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, isDarkMode
+            ? { backgroundColor: '#112540' }
+            : { backgroundColor: '#fff' }]}>
             <Animated.Image
-                source={require('../assets/logo.png')} // Replace with your logo
-                style={[styles.logo, {
-                    opacity: animation.interpolate({
-                        inputRange: [0, 100],
-                        outputRange: [0.5, 1], // Fade in during load
-                    }),
-                }]}
+                source={require('../assets/logo.png')}
+                style={[
+                    styles.logo,
+                    {
+                        // opacity: animation.interpolate({
+                        //     inputRange: [0, 100],
+                        //     outputRange: [0.5, 1], // Animated
+                        // }),
+                        tintColor: isDarkMode ? '#10CDFC' : '#1C26FF',
+                    },
+                ]}
             />
             <View style={styles.barContainer}>
                 {[...Array(5)].map((_, index) => (
-                    <View key={index} style={[styles.box, getBoxStyle(index)]} />
+                    <View key={index} style={[styles.box, getBoxStyle(index, isDarkMode)]} />
                 ))}
             </View>
-            <Text style={styles.percentage}>{progress}%</Text>
+            <Text style={[styles.percentage, isDarkMode
+                ? { color: '#fff' }
+                : { color: '#000' }]}>{progress}%</Text>
         </View>
     );
 };
