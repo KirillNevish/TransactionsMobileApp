@@ -60,8 +60,8 @@ function Homepage() {
             ? { backgroundColor: '#112540' }
             : { backgroundColor: '#fff' }]}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
+            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
                     <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
                         ? { tintColor: '#112540' }
                         : { tintColor: '#fff' }]} />
@@ -75,7 +75,7 @@ function Homepage() {
             </View>
             <ScrollView showsVerticalScrollIndicator={false} style={styles.contentBlock}>
                 <View>
-                    <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10, color: isDarkMode ? '#fff' : '#000' }}>{translations.totalBalance}</Text>
+                    <Text style={{ fontSize: 24, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 15, color: isDarkMode ? '#fff' : '#000' }}>{translations.totalBalance}</Text>
 
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
@@ -96,7 +96,7 @@ function Homepage() {
                     </View>
                 </View>
                 <View>
-                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10, color: isDarkMode ? '#fff' : '#000' }}>{translations.savings}</Text>
+                    <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginTop: 15, marginBottom: 10, color: isDarkMode ? '#fff' : '#000' }}>{translations.savings}</Text>
                 </View>
                 <View style={{ display: "flex", flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
                     {goalData ? (
@@ -126,7 +126,7 @@ function Homepage() {
                         </View>
                     )}
                 </View>
-                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginVertical: 10 }}>
+                <View style={{ display: "flex", flexDirection: "row", alignItems: "center", marginVertical: 15 }}>
                     <View>
                         <Image source={require('../assets/boy.png')} style={{ resizeMode: 'contain', height: 220 }} />
                     </View>
@@ -144,7 +144,7 @@ function Homepage() {
                         </View>
                     </View>
                 </View>
-                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
                     <View style={{ display: "flex", flexDirection: 'row' }}>
                         <Text style={{ fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, color: isDarkMode ? '#fff' : '#000' }}>{translations.TransactionsHistoryFHalf}  </Text><Text style={{ fontSize: 17, fontFamily: 'Montserrat-Light', marginLeft: -5, color: isDarkMode ? '#fff' : '#000' }}>{translations.TransactionsHistorySHalf}</Text>
                     </View>

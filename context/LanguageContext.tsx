@@ -85,6 +85,9 @@ type Translations = {
     lightMode: string;
     darkMode: string;
 
+    theme: string;
+
+
     monthNames: string[];
     monthNamesShort: string[];
     dayNames: string[];
@@ -217,6 +220,8 @@ const translations: TranslationMap = {
         lightMode: 'Tryb światła',
         darkMode: 'Tryb ciemny',
 
+        theme: 'Temat',
+
         monthNames: [
             'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
             'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień',
@@ -337,6 +342,8 @@ const translations: TranslationMap = {
         lightMode: 'Light mode',
         darkMode: 'Dark mode',
 
+        theme: 'Theme',
+
         monthNames: [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December',
@@ -456,6 +463,8 @@ const translations: TranslationMap = {
 
         lightMode: 'Світлий режим',
         darkMode: 'Темний режим',
+
+        theme: 'Тема',
 
         monthNames: [
             'Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень',

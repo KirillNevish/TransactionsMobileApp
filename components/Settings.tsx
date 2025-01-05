@@ -31,8 +31,8 @@ const Settings = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 40 }}>
+            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 20 }}>
                     <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
                         onPress={() => navigation.navigate('Homepage')}
                     >
@@ -59,13 +59,14 @@ const Settings = () => {
                         ? { color: '#fff' }
                         : { color: '#000' }]}>{translations.settings}</Text>
                 </View>
-                <View style={{ flex: 1, display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                <View style={{ flex: 1, display: "flex", flexDirection: "row", }}>
                     <View style={{ display: "flex", flexDirection: "column", }}>
-                        <Text style={[styles.languageLabel, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}>{translations.language}</Text>
-
-                        <View style={styles.languageSwitcher}>
+                        <View style={{ borderBottomColor: '#A3A3A3', borderBottomWidth: 1, marginVertical: 20, }}>
+                            <Text style={[styles.label, isDarkMode
+                                ? { color: '#fff' }
+                                : { color: '#000' }]}>{translations.language}</Text>
+                        </View>
+                        <View style={styles.switcher}>
                             <TouchableOpacity
                                 style={[styles.languageButton, language === 'pl' && styles.activeButton, language === 'pl' && {
                                     backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF',
@@ -91,20 +92,38 @@ const Settings = () => {
                                 <Text style={styles.languageText}>{translations.ukrainian} </Text>
                             </TouchableOpacity>
                         </View>
+                        <View style={{ borderBottomColor: '#A3A3A3', borderBottomWidth: 1, marginVertical: 20, }}>
+                            <Text style={[styles.label, isDarkMode
+                                ? { color: '#fff' }
+                                : { color: '#000' }]}>{translations.theme}</Text>
+                        </View>
+                        <View style={styles.switcher}>
+                            <TouchableOpacity
+                                style={[styles.themeButton, theme === 'light' && styles.activeButton, theme === 'light' && {
+                                    backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF',
+                                },]}
+                                onPress={toggleTheme}
+                            >
+                                <Text style={styles.languageText}>{translations.lightMode}</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.themeButton, theme === 'dark' && styles.activeButton, theme === 'dark' && {
+                                    backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF',
+                                },]}
+                                onPress={toggleTheme}
+                            >
+                                <Text style={styles.languageText}>{translations.darkMode} </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                 </View>
-                <TouchableOpacity style={[styles.themeToggle, isDarkMode
-                    ? { backgroundColor: '#10CDFC' }
-                    : { backgroundColor: '#1C26FF' }]} onPress={toggleTheme}>
-                    <Text style={styles.themeToggleText}>
-                        {isDarkMode ? translations.lightMode : translations.darkMode}
-                    </Text>
-                </TouchableOpacity>
             </View>
+
         </SafeAreaView>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -137,21 +156,28 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat-Bold',
         fontWeight: 700
     },
-    languageLabel: {
-        marginBottom: 10,
+    label: {
         fontSize: 17,
         fontFamily: 'Montserrat-Bold',
         fontWeight: 700,
     },
-    languageSwitcher: {
+    switcher: {
+        display: "flex",
         flexDirection: 'row',
         justifyContent: 'space-between',
-        gap: 20
+        width: "100%",
     },
     languageButton: {
-        padding: 10,
-        borderRadius: 5,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         backgroundColor: "#A3A3A3",
+        borderRadius: 25,
+    },
+    themeButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 30,
+        backgroundColor: "#A3A3A3",
+        borderRadius: 25,
     },
     activeButton: {
         backgroundColor: '#1C26FF',

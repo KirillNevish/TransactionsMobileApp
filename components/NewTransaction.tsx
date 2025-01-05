@@ -126,8 +126,8 @@ const NewTransaction = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 120, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
+            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
                     <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
                         ? { tintColor: '#112540' }
                         : { tintColor: '#fff' }]} />
