@@ -10,6 +10,10 @@ import {
     Animated,
     ScrollView,
     SafeAreaView,
+    KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Sidebar from './Sidebar';
@@ -224,126 +228,138 @@ const Transactions = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
-            <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
-                    <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
-                        ? { tintColor: '#112540' }
-                        : { tintColor: '#fff' }]} />
-                    <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
-                            ? { tintColor: '#112540' }
-                            : { tintColor: '#fff' }]} />
-                    </TouchableOpacity>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
+                        <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                            <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
+                                <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
+                                    ? { tintColor: '#112540' }
+                                    : { tintColor: '#fff' }]} />
+                                <TouchableOpacity onPress={toggleSidebar}>
+                                    <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                                        ? { tintColor: '#112540' }
+                                        : { tintColor: '#fff' }]} />
+                                </TouchableOpacity>
 
-                </View>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
-                ? { backgroundColor: '#112540' }
-                : { backgroundColor: '#fff' }]}>
-                <View>
-                    <Text style={[styles.title, isDarkMode
-                        ? { color: '#fff' }
-                        : { color: '#000' }]}>{translations.transactions}</Text>
-                </View>
-                <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-                    <CircleVisualization />
-                </View>
-                <View style={{}}>
-                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.categoryExpediture}</Text>
-                    <View style={{ display: "flex", flexDirection: "column", gap: 8, }}>
-                        {categories.map((cat, index) => {
-                            const totalAmount = calculateTotalAmountForCategory(cat.name);
-                            return (
-                                <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                                    <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                                        <View style={[styles.iconContainer, { backgroundColor: cat.color }]}>
-                                            {cat.icon && (
-                                                <Image source={cat.icon} style={styles.categoryIcon} /> // Use resolved icon
-                                            )}
-                                        </View>
-                                        <View style={{ display: "flex", flexDirection: "column", marginLeft: 12, width: "70%", gap: 8 }}>
-                                            <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, }}>{cat.name}</Text>
-                                        </View>
-                                    </View>
-                                    <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                                        <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>zł {totalAmount || 0}</Text>
-                                    </View>
-                                </View>
-                            );
-                        })}
-                    </View>
-                </View>
-
-                <View style={{ marginTop: 30, marginBottom: 20 }}>
-                    <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%", height: 54, borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderWidth: 1, borderRadius: 30 }} onPress={toggleBottomBar}>
-                        <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                            <Image source={require('../assets/plusBlue.png')} style={{ tintColor: isDarkMode ? '#10CDFC' : '#1C26FF' }} />
-                            <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginLeft: 7 }}>{translations.addCategoryButton}</Text>
+                            </View>
                         </View>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
 
-            {/* Bottom Bar */}
-            {isBottomBarVisible && (
-                <Animated.View style={[
-                    styles.bottomBar, isDarkMode
-                        ? { backgroundColor: '#112540' }
-                        : { backgroundColor: '#fff' },
-                    {
-                        transform: [{ translateY: bottomBarAnim }], // Apply animation
-                    },
-                ]}>
-                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
-                        <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addCategoryButton}</Text>
-                        <TouchableOpacity onPress={toggleBottomBar}>
-                            <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000' }} />
-                        </TouchableOpacity>
-                    </View>
+                        <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                            ? { backgroundColor: '#112540' }
+                            : { backgroundColor: '#fff' }]}>
+                            <View>
+                                <Text style={[styles.title, isDarkMode
+                                    ? { color: '#fff' }
+                                    : { color: '#000' }]}>{translations.transactions}</Text>
+                            </View>
+                            <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
+                                <CircleVisualization />
+                            </View>
+                            <View style={{}}>
+                                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginVertical: 10 }}>{translations.categoryExpediture}</Text>
+                                <View style={{ display: "flex", flexDirection: "column", gap: 8, }}>
+                                    {categories.map((cat, index) => {
+                                        const totalAmount = calculateTotalAmountForCategory(cat.name);
+                                        return (
+                                            <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                                                <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                                    <View style={[styles.iconContainer, { backgroundColor: cat.color }]}>
+                                                        {cat.icon && (
+                                                            <Image source={cat.icon} style={styles.categoryIcon} /> // Use resolved icon
+                                                        )}
+                                                    </View>
+                                                    <View style={{ display: "flex", flexDirection: "column", marginLeft: 12, width: "70%", gap: 8 }}>
+                                                        <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: 700, }}>{cat.name}</Text>
+                                                    </View>
+                                                </View>
+                                                <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                                                    <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 18, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>zł {totalAmount || 0}</Text>
+                                                </View>
+                                            </View>
+                                        );
+                                    })}
+                                </View>
+                            </View>
 
-                    <TextInput
-                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                        style={[styles.input, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}
-                        placeholder={translations.categoryName}
-                        value={categoryName}
-                        onChangeText={setCategoryName}
-                    />
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.chooseCategoryColor}</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.colorScroll}>
-                        {colors.map((color, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[styles.colorOption, { backgroundColor: color, borderWidth: selectedColor === color ? 2 : 0, borderColor: '#1C26FF' }]}
-                                onPress={() => setSelectedColor(color)}
-                            />
-                        ))}
-                    </ScrollView>
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.chooseCategoryIcon}</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.iconScroll}>
-                        {Object.entries(ICONS).map(([key, icon]) => (
-                            <TouchableOpacity key={key} onPress={() => setSelectedIcon(key)}> {/* Use the key */}
-                                <Image
-                                    source={icon}
-                                    style={[
-                                        styles.iconOption,
-                                        { borderWidth: selectedIcon === key ? 2 : 0, borderColor: '#1C26FF', borderRadius: 12 },
-                                    ]}
+                            <View style={{ marginTop: 30, marginBottom: 20 }}>
+                                <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", width: "100%", height: 54, borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderWidth: 1, borderRadius: 30 }} onPress={toggleBottomBar}>
+                                    <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                        <Image source={require('../assets/plusBlue.png')} style={{ tintColor: isDarkMode ? '#10CDFC' : '#1C26FF' }} />
+                                        <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700, marginLeft: 7 }}>{translations.addCategoryButton}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
+
+                        {/* Bottom Bar */}
+                        {isBottomBarVisible && (
+                            <Animated.View style={[
+                                styles.bottomBar, isDarkMode
+                                    ? { backgroundColor: '#112540' }
+                                    : { backgroundColor: '#fff' },
+                                {
+                                    transform: [{ translateY: bottomBarAnim }], // Apply animation
+                                },
+                            ]}>
+                                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
+                                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addCategoryButton}</Text>
+                                    <TouchableOpacity onPress={toggleBottomBar}>
+                                        <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000' }} />
+                                    </TouchableOpacity>
+                                </View>
+
+                                <TextInput
+                                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                    style={[styles.input, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}
+                                    placeholder={translations.categoryName}
+                                    value={categoryName}
+                                    onChangeText={setCategoryName}
                                 />
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                    <TouchableOpacity style={[styles.saveButton, isDarkMode
-                        ? { backgroundColor: '#10CDFC' }
-                        : { backgroundColor: '#1C26FF' }]} onPress={addCategory}>
-                        <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
-                    </TouchableOpacity>
-                </Animated.View>
-            )}
+                                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.chooseCategoryColor}</Text>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.colorScroll}>
+                                    {colors.map((color, index) => (
+                                        <TouchableOpacity
+                                            key={index}
+                                            style={[styles.colorOption, { backgroundColor: color, borderWidth: selectedColor === color ? 2 : 0, borderColor: '#1C26FF' }]}
+                                            onPress={() => setSelectedColor(color)}
+                                        />
+                                    ))}
+                                </ScrollView>
+                                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.chooseCategoryIcon}</Text>
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.iconScroll}>
+                                    {Object.entries(ICONS).map(([key, icon]) => (
+                                        <TouchableOpacity key={key} onPress={() => setSelectedIcon(key)}> {/* Use the key */}
+                                            <Image
+                                                source={icon}
+                                                style={[
+                                                    styles.iconOption,
+                                                    { borderWidth: selectedIcon === key ? 2 : 0, borderColor: '#1C26FF', borderRadius: 12 },
+                                                ]}
+                                            />
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
+                                <TouchableOpacity style={[styles.saveButton, isDarkMode
+                                    ? { backgroundColor: '#10CDFC' }
+                                    : { backgroundColor: '#1C26FF' }]} onPress={addCategory}>
+                                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        )}
 
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

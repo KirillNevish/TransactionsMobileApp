@@ -1,12 +1,16 @@
 import Sidebar from './Sidebar';
 import React, { useContext, useState, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, Animated, ScrollView, SafeAreaView } from 'react-native';
+import {
+    View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, Animated, ScrollView, KeyboardAvoidingView, SafeAreaView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GoalContext } from '../context/GoalContext';
 import { useBalance } from '../context/BalanceContext';
 import { CategoryContext } from '../context/CategoryContext';
-import UpDown from '../assets/UpDown.png';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -202,209 +206,221 @@ const Savings = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
-            <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 20 }}>
-                    <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-                        onPress={() => navigation.navigate('Homepage')}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        keyboardShouldPersistTaps="handled"
                     >
+                        <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
+                        <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                            <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 20 }}>
+                                <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
+                                    onPress={() => navigation.navigate('Homepage')}
+                                >
 
-                        <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
-                            ? { tintColor: '#112540' }
-                            : { tintColor: '#fff' }]} />
-                        <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
-                            ? { tintColor: '#112540' }
-                            : { tintColor: '#fff' }]} />
-                    </TouchableOpacity>
+                                    <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
+                                        ? { tintColor: '#112540' }
+                                        : { tintColor: '#fff' }]} />
+                                    <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={toggleSidebar}>
+                                    <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                                        ? { tintColor: '#112540' }
+                                        : { tintColor: '#fff' }]} />
+                                </TouchableOpacity>
 
-                </View>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
-                ? { backgroundColor: '#112540' }
-                : { backgroundColor: '#fff' }]}>
-                <View>
-                    <Text style={[styles.title, isDarkMode
-                        ? { color: '#fff' }
-                        : { color: '#000' }]}>{translations.savings}</Text>
-                </View>
-                <View style={{ height: 90, }}>
-                    <View style={styles.progressBarWrapper}>
-                        <View style={styles.progressBarBackground}>
-                            <View style={[styles.progressBarIndicator, isDarkMode
-                                ? { backgroundColor: '#10CDFC' }
-                                : { backgroundColor: '#1C26FF' }, { width: `${calculateProgressPercentage()}%` }]} />
+                            </View>
                         </View>
-                        <Text style={[styles.progressLabel, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}>{currentProgress} zł / {goalAmount} zł</Text>
-                    </View>
-                </View>
-                <TouchableOpacity style={{ borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", marginVertical: 20, maxWidth: 120, }} onPress={toggleBottomBar}>
-                    <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.topUpButton}</Text>
-                </TouchableOpacity>
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.AccumulationPurpose}</Text>
-                <TextInput
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 10,
-                        padding: 10,
-                        marginBottom: 20,
-                        color: isDarkMode ? '#fff' : '#000',
-                    }}
-                    value={accumulation}
-                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                    onChangeText={setAccumulation}
-                    placeholder="Cel"
-                />
+
+                        <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                            ? { backgroundColor: '#112540' }
+                            : { backgroundColor: '#fff' }]}>
+                            <View>
+                                <Text style={[styles.title, isDarkMode
+                                    ? { color: '#fff' }
+                                    : { color: '#000' }]}>{translations.savings}</Text>
+                            </View>
+                            <View style={{ height: 90, }}>
+                                <View style={styles.progressBarWrapper}>
+                                    <View style={styles.progressBarBackground}>
+                                        <View style={[styles.progressBarIndicator, isDarkMode
+                                            ? { backgroundColor: '#10CDFC' }
+                                            : { backgroundColor: '#1C26FF' }, { width: `${calculateProgressPercentage()}%` }]} />
+                                    </View>
+                                    <Text style={[styles.progressLabel, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}>{currentProgress} zł / {goalAmount} zł</Text>
+                                </View>
+                            </View>
+                            <TouchableOpacity style={{ borderColor: isDarkMode ? '#10CDFC' : '#1C26FF', borderRadius: 45, height: 39, borderWidth: 1, paddingHorizontal: 15, display: "flex", flexDirection: "row", flexWrap: "nowrap", justifyContent: "center", alignItems: "center", marginVertical: 20, maxWidth: 140, width: "100%" }} onPress={toggleBottomBar}>
+                                <Text style={{ color: isDarkMode ? '#10CDFC' : '#1C26FF', fontSize: 16, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.topUpButton}</Text>
+                            </TouchableOpacity>
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.AccumulationPurpose}</Text>
+                            <TextInput
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: '#ccc',
+                                    borderRadius: 10,
+                                    padding: 10,
+                                    marginBottom: 20,
+                                    color: isDarkMode ? '#fff' : '#000',
+                                }}
+                                value={accumulation}
+                                placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                onChangeText={setAccumulation}
+                                placeholder={translations.newGoal}
+                            />
 
 
-                {/* Amount */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
+                            {/* Amount */}
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
 
-                <View style={styles.inputWrapper}>
-                    <Text style={styles.currencySymbol}>zł</Text>
-                    <TextInput
-                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                        style={[styles.numericInput, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}
-                        keyboardType="numeric"
-                        value={goalAmount}
-                        onChangeText={(text) => handleAmountInput(text, setGoalAmount)}
-                        placeholder="0"
-                    />
-                </View>
+                            <View style={styles.inputWrapper}>
+                                <Text style={styles.currencySymbol}>zł</Text>
+                                <TextInput
+                                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                    style={[styles.numericInput, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}
+                                    keyboardType="numeric"
+                                    value={goalAmount}
+                                    onChangeText={(text) => handleAmountInput(text, setGoalAmount)}
+                                    placeholder="0"
+                                />
+                            </View>
 
-                {/* Date */}
-                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 20, marginBottom: 20, }}>
-                    <View>
-                        <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.startDate}</Text>
-                        <TouchableOpacity
-                            onPress={showStartDatePicker}
-                            style={{
-                                borderWidth: 1,
-                                borderColor: '#ccc',
-                                borderRadius: 10,
-                                padding: 10,
-                                width: 100
-                            }}
-                        >
-                            <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{startDate || `${currentYear}-00-00`}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <DateTimePickerModal
-                        isVisible={isStartDatePickerVisible}
-                        mode="date"
-                        onConfirm={handleStartDateConfirm}
-                        onCancel={hideStartDatePicker}
-                    />
+                            {/* Date */}
+                            <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", gap: 20, marginBottom: 20, }}>
+                                <View>
+                                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.startDate}</Text>
+                                    <TouchableOpacity
+                                        onPress={showStartDatePicker}
+                                        style={{
+                                            borderWidth: 1,
+                                            borderColor: '#ccc',
+                                            borderRadius: 10,
+                                            padding: 10,
+                                            width: 120
+                                        }}
+                                    >
+                                        <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{startDate || `${currentYear}-00-00`}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isStartDatePickerVisible}
+                                    mode="date"
+                                    onConfirm={handleStartDateConfirm}
+                                    onCancel={hideStartDatePicker}
+                                />
 
-                    <View>
-                        <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.endDate}</Text>
-                        <TouchableOpacity
-                            onPress={showFinishDatePicker}
-                            style={{
-                                borderWidth: 1,
-                                borderColor: '#ccc',
-                                borderRadius: 10,
-                                padding: 10,
-                                width: 100
-                            }}
-                        >
-                            <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{finishDate || `0000-00-00`}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <DateTimePickerModal
-                        isVisible={isFinishDatePickerVisible}
-                        mode="date"
-                        onConfirm={handleFinishDateConfirm}
-                        onCancel={hideFinishDatePicker}
-                    />
+                                <View>
+                                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.endDate}</Text>
+                                    <TouchableOpacity
+                                        onPress={showFinishDatePicker}
+                                        style={{
+                                            borderWidth: 1,
+                                            borderColor: '#ccc',
+                                            borderRadius: 10,
+                                            padding: 10,
+                                            width: 120
+                                        }}
+                                    >
+                                        <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{finishDate || `0000-00-00`}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <DateTimePickerModal
+                                    isVisible={isFinishDatePickerVisible}
+                                    mode="date"
+                                    onConfirm={handleFinishDateConfirm}
+                                    onCancel={hideFinishDatePicker}
+                                />
 
-                </View>
+                            </View>
 
 
-                {/* Note */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
-                <TextInput
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 10,
-                        padding: 10,
-                        marginBottom: 20,
-                        color: isDarkMode ? '#fff' : '#000',
-                    }}
-                    value={goalNote}
-                    onChangeText={setGoalNote}
-                />
+                            {/* Note */}
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
+                            <TextInput
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: '#ccc',
+                                    borderRadius: 10,
+                                    padding: 10,
+                                    marginBottom: 20,
+                                    color: isDarkMode ? '#fff' : '#000',
+                                }}
+                                value={goalNote}
+                                onChangeText={setGoalNote}
+                            />
 
-                {/* Save Button */}
-                <TouchableOpacity style={[styles.saveButton, isDarkMode
-                    ? { backgroundColor: '#10CDFC' }
-                    : { backgroundColor: '#1C26FF' }]} onPress={saveGoal} >
-                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                            {/* Save Button */}
+                            <TouchableOpacity style={[styles.saveButton, isDarkMode
+                                ? { backgroundColor: '#10CDFC' }
+                                : { backgroundColor: '#1C26FF' }]} onPress={saveGoal} >
+                                <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
 
-            {/* Bottom Bar */}
-            {isBottomBarVisible && (
-                <Animated.View style={[
-                    styles.bottomBar, isDarkMode
-                        ? { backgroundColor: '#112540' }
-                        : { backgroundColor: '#fff' },
-                    {
-                        transform: [{ translateY: bottomBarAnim }], // Apply animation
-                    },
-                ]}>
-                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
-                        <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addtopUpText}</Text>
-                        <TouchableOpacity onPress={toggleBottomBar}>
-                            <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000', }} />
-                        </TouchableOpacity>
-                    </View>
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
+                        {/* Bottom Bar */}
+                        {isBottomBarVisible && (
+                            <Animated.View style={[
+                                styles.bottomBar, isDarkMode
+                                    ? { backgroundColor: '#112540' }
+                                    : { backgroundColor: '#fff' },
+                                {
+                                    transform: [{ translateY: bottomBarAnim }], // Apply animation
+                                },
+                            ]}>
+                                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20, }}>
+                                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 20, fontFamily: 'Montserrat-Bold', fontWeight: 700 }}>{translations.addtopUpText}</Text>
+                                    <TouchableOpacity onPress={toggleBottomBar}>
+                                        <Image source={require('../assets/x.png')} style={{ tintColor: isDarkMode ? '#fff' : '#000', }} />
+                                    </TouchableOpacity>
+                                </View>
+                                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
 
-                    <View style={styles.inputWrapper}>
-                        <Text style={styles.currencySymbol}>zł</Text>
-                        <TextInput
-                            placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                            style={[styles.numericInput, isDarkMode
-                                ? { color: '#fff' }
-                                : { color: '#000' }]}
-                            keyboardType="numeric"
-                            value={amount}
-                            onChangeText={(text) => handleAmountInput(text, setAmount)}
-                            placeholder="0"
+                                <View style={styles.inputWrapper}>
+                                    <Text style={styles.currencySymbol}>zł</Text>
+                                    <TextInput
+                                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                        style={[styles.numericInput, isDarkMode
+                                            ? { color: '#fff' }
+                                            : { color: '#000' }]}
+                                        keyboardType="numeric"
+                                        value={amount}
+                                        onChangeText={(text) => handleAmountInput(text, setAmount)}
+                                        placeholder="0"
+                                    />
+                                </View>
+
+                                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
+                                <TouchableOpacity
+                                    style={styles.input}
+                                    onPress={() => setDatePickerVisible(true)}
+                                >
+                                    <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{date || `${currentYear}-00-00`}</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={[styles.saveButton, isDarkMode
+                                    ? { backgroundColor: '#10CDFC' }
+                                    : { backgroundColor: '#1C26FF' }]} onPress={saveAmount}>
+                                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        )}
+                        <DateTimePickerModal
+                            isVisible={isDatePickerVisible}
+                            mode="date"
+                            onConfirm={handleConfirmDate}
+                            onCancel={() => setDatePickerVisible(false)}
                         />
-                    </View>
-
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
-                    <TouchableOpacity
-                        style={styles.input}
-                        onPress={() => setDatePickerVisible(true)}
-                    >
-                        <Text style={{ color: isDarkMode ? '#fff' : '#000', }}>{date || `${currentYear}-00-00`}</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={[styles.saveButton, isDarkMode
-                        ? { backgroundColor: '#10CDFC' }
-                        : { backgroundColor: '#1C26FF' }]} onPress={saveAmount}>
-                        <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
-                    </TouchableOpacity>
-                </Animated.View>
-            )}
-            <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirmDate}
-                onCancel={() => setDatePickerVisible(false)}
-            />
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

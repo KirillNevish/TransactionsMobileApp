@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -15,37 +15,58 @@ type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Load
 
 const LoadingScreen: React.FC = () => {
     const [progress, setProgress] = useState<number>(0); // Progress percentage
-    const animation = new Animated.Value(progress);
+    // const animation = new Animated.Value(progress);
+    const animation = useRef(new Animated.Value(0)).current;
     const { theme } = useTheme();
     const isDarkMode = theme === 'dark';
     const navigation = useNavigation<LoadingScreenNavigationProp>();
+
+    // useEffect(() => {
+    //     const checkFirstLaunch = async () => {
+    //         const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
+
+    //         // Simulate loading progress
+    //         const interval = setInterval(() => {
+    //             setProgress((prev) => {
+    //                 const nextProgress = Math.min(prev + 5, 100);
+    //                 if (nextProgress === 100) {
+    //                     clearInterval(interval); // Stop at 100%
+
+    //                     // Navigate based on the flag
+    //                     if (isFirstLaunch === null) {
+    //                         // First launch, navigate to Onboarding
+    //                         AsyncStorage.setItem('isFirstLaunch', 'false'); // Set the flag
+    //                         navigation.navigate('Onboarding');
+    //                     } else {
+    //                         // Not the first launch, navigate to Homepage
+    //                         navigation.navigate('Homepage');
+    //                     }
+    //                 }
+    //                 return nextProgress;
+    //             });
+    //         }, 200);
+
+    //         return () => clearInterval(interval);
+    //     };
+
+    //     checkFirstLaunch();
+    // }, []);
 
     useEffect(() => {
         const checkFirstLaunch = async () => {
             const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
 
-            // Simulate loading progress
-            const interval = setInterval(() => {
-                setProgress((prev) => {
-                    const nextProgress = Math.min(prev + 5, 100);
-                    if (nextProgress === 100) {
-                        clearInterval(interval); // Stop at 100%
+            for (let i = 0; i <= 100; i += 5) {
+                setProgress(i);
+                await new Promise((resolve) => setTimeout(resolve, 200));
+            }
 
-                        // Navigate based on the flag
-                        if (isFirstLaunch === null) {
-                            // First launch, navigate to Onboarding
-                            AsyncStorage.setItem('isFirstLaunch', 'false'); // Set the flag
-                            navigation.navigate('Onboarding');
-                        } else {
-                            // Not the first launch, navigate to Homepage
-                            navigation.navigate('Homepage');
-                        }
-                    }
-                    return nextProgress;
-                });
-            }, 200);
-
-            return () => clearInterval(interval);
+            if (isFirstLaunch === null) {
+                await AsyncStorage.setItem('isFirstLaunch', 'false');
+                navigation.replace('Onboarding');
+            } else {
+                navigation.replace('Homepage');
+            }
         };
 
         checkFirstLaunch();
@@ -79,10 +100,6 @@ const LoadingScreen: React.FC = () => {
                 style={[
                     styles.logo,
                     {
-                        // opacity: animation.interpolate({
-                        //     inputRange: [0, 100],
-                        //     outputRange: [0.5, 1], // Animated
-                        // }),
                         tintColor: isDarkMode ? '#10CDFC' : '#1C26FF',
                     },
                 ]}

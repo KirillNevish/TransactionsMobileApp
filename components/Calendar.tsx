@@ -77,7 +77,7 @@ const CalendarScreen = () => {
             <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
             <View style={{ backgroundColor: "#121212" }}>
                 <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 20 }}>
-                    <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 20 }}>
+                    <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
                         <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
                             ? { tintColor: '#112540' }
                             : { tintColor: '#fff' }]} />
@@ -112,7 +112,7 @@ const CalendarScreen = () => {
                     markedDates={markedDates}
                 />
                 <View style={{ padding: 20, display: "flex", flexDirection: "column", gap: 15, marginTop: 10 }}>
-                    {selectedDate && (
+                    {/* {selectedDate && (
                         <>
                             <Text style={[styles.title, isDarkMode
                                 ? { color: '#fff' }
@@ -140,6 +140,59 @@ const CalendarScreen = () => {
                                         </View>
                                     </View>
                                 ))}
+                        </>
+                    )} */}
+                    {selectedDate && (
+                        <>
+                            <Text style={[styles.title, isDarkMode ? { color: '#fff' } : { color: '#000' }]}>
+                                {selectedDate}:
+                            </Text>
+                            {transactions.some(transaction => transaction.date === selectedDate) ? (
+                                transactions
+                                    .filter(transaction => transaction.date === selectedDate)
+                                    .map((transaction, index) => (
+                                        <View
+                                            key={index}
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                justifyContent: "space-between",
+                                                alignItems: "center",
+                                                borderRadius: 12,
+                                                padding: 15,
+                                                backgroundColor: isDarkMode ? '#112540' : '#F3F3F3',
+                                            }}
+                                        >
+                                            <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                                                <View style={[styles.transactionCard, { backgroundColor: transaction.color }]}>
+                                                    <Image
+                                                        source={transaction.icon === 'UpDown' ? require('../assets/UpDown.png') : transaction.icon}
+                                                    />
+                                                </View>
+                                                <View style={{ display: "flex", flexDirection: "column", marginLeft: 12 }}>
+                                                    <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: '700' }}>
+                                                        {transaction.category}
+                                                    </Text>
+                                                    <Text style={{ color: "#A3A3A3", fontSize: 12, fontFamily: 'Montserrat-Bold' }}>
+                                                        {transaction.note || "No note"}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                            <View style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                                                <Text style={{ color: "red", fontSize: 17, fontFamily: 'Montserrat-Bold', fontWeight: '700' }}>
+                                                    -zł{transaction.amount.toFixed(2)}
+                                                </Text>
+                                                <Text style={{ color: "#A3A3A3", fontSize: 12, fontFamily: 'Montserrat-Bold' }}>
+                                                    {transaction.date}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    ))
+                            ) : (
+                                <Text style={{ color: isDarkMode ? '#fff' : '#000', fontSize: 16, fontFamily: 'Montserrat-Bold', textAlign: 'center', marginTop: 10 }}>
+                                    {translations.noTransactionsYet}
+                                </Text>
+                            )}
                         </>
                     )}
                 </View>

@@ -1,7 +1,12 @@
 
 import Sidebar from './Sidebar';
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, ScrollView, SafeAreaView } from 'react-native';
+import {
+    View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Image, ScrollView, SafeAreaView, KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { CategoryContext } from '../context/CategoryContext';
 import { useNavigation } from '@react-navigation/native';
@@ -125,127 +130,153 @@ const NewTransaction = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
-            <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
-                    <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
-                        ? { tintColor: '#112540' }
-                        : { tintColor: '#fff' }]} />
-                    <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
-                            ? { tintColor: '#112540' }
-                            : { tintColor: '#fff' }]} />
-                    </TouchableOpacity>
 
-                </View>
-            </View>
-
-            <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
-                ? { backgroundColor: '#112540' }
-                : { backgroundColor: '#fff' }]}>
-                <View>
-                    <Text style={[styles.title, isDarkMode
-                        ? { color: '#fff' }
-                        : { color: '#000' }]}>{translations.newTransaction}</Text>
-                </View>
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.category}</Text>
-
-                {categories?.length > 0 ? (
-                    <View style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 10,
-                        padding: -50,
-                        marginBottom: 20,
-                    }}>
-                        <Picker
-                            selectedValue={selectedCategory}
-                            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-                        >
-                            {categories.map((cat, index) => (
-                                <Picker.Item key={index} label={cat.name} value={cat.name} style={{ color: "#76787A" }} />
-                            ))}
-                        </Picker>
-                    </View>
-                ) : (
-                    <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 20, }}>{translations.noCategoriesText}</Text>
-                )}
-
-
-                {/* Payment Method */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.cardOrCash}</Text>
-                <View style={{
-                    borderWidth: 1,
-                    borderColor: '#ccc',
-                    borderRadius: 10,
-                    padding: -50,
-                    marginBottom: 20,
-                }}>
-                    <Picker
-                        selectedValue={paymentMethod}
-                        onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        keyboardShouldPersistTaps="handled"
                     >
 
-                        <Picker.Item label={translations.card} value="Karta" style={{ color: "#76787A", }} />
-                        <Picker.Item label={translations.cash} value="Gotówka" style={{ color: "#76787A", }} />
 
-                    </Picker>
-                </View>
+                        <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
+                        <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                            <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "baseline", paddingHorizontal: 20, marginTop: 10 }}>
+                                <Image source={require('../assets/logoHeader.png')} style={[styles.logo, isDarkMode
+                                    ? { tintColor: '#112540' }
+                                    : { tintColor: '#fff' }]} />
+                                <TouchableOpacity onPress={toggleSidebar}>
+                                    <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                                        ? { tintColor: '#112540' }
+                                        : { tintColor: '#fff' }]} />
+                                </TouchableOpacity>
 
-                {/* Amount */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
+                            </View>
+                        </View>
 
-                <View style={styles.inputWrapper}>
-                    <Text style={styles.currencySymbol}>zł</Text>
-                    <TextInput
-                        style={[styles.numericInput, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}
-                        keyboardType="numeric"
-                        value={amount}
-                        onChangeText={handleAmountInput}
-                        placeholder="0"
-                        placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                    />
-                </View>
+                        <ScrollView showsVerticalScrollIndicator={false} style={[styles.container, isDarkMode
+                            ? { backgroundColor: '#112540' }
+                            : { backgroundColor: '#fff' }]}>
+                            <View>
+                                <Text style={[styles.title, isDarkMode
+                                    ? { color: '#fff' }
+                                    : { color: '#000' }]}>{translations.newTransaction}</Text>
+                            </View>
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.category}</Text>
 
-                {/* Date */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
-                <TouchableOpacity
-                    style={styles.input}
-                    onPress={() => setDatePickerVisible(true)}
-                >
-                    <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>{date || `${currentYear}-00-00`}</Text>
-                </TouchableOpacity>
+                            {categories?.length > 0 ? (
+                                <View style={{
+                                    borderWidth: 1,
+                                    borderColor: '#ccc',
+                                    borderRadius: 10,
+                                    padding: -50,
+                                    marginBottom: 20,
+                                }}>
+                                    <Picker
+                                        selectedValue={selectedCategory}
+                                        onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+                                    >
+                                        {categories.map((cat, index) => (
+                                            <Picker.Item key={index} label={cat.name} value={cat.name} style={{ color: "#76787A" }} />
+                                        ))}
+                                    </Picker>
+                                </View>
+                            ) : (
+                                <TouchableOpacity onPress={() => navigation.navigate('Transactions')}>
+                                    <Text style={{
+                                        color: "#76787A",
+                                        fontSize: 15,
+                                        fontFamily: 'Montserrat-Light',
+                                        marginBottom: 20,
+                                        textDecorationLine: 'underline',
+                                        textAlign: 'center'
+                                    }}>
+                                        {translations.noCategoriesText}
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
 
-                {/* Note */}
-                <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
-                <TextInput
-                    style={{
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 10,
-                        padding: 10,
-                        color: isDarkMode ? '#fff' : '#000'
-                    }}
-                    value={note}
-                    onChangeText={setNote}
-                />
 
-                {/* Save Button */}
-                <TouchableOpacity style={[styles.saveButton, isDarkMode
-                    ? { backgroundColor: '#10CDFC' }
-                    : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                            {/* Payment Method */}
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.cardOrCash}</Text>
+                            <View style={{
+                                borderWidth: 1,
+                                borderColor: '#ccc',
+                                borderRadius: 10,
+                                padding: -50,
+                                marginBottom: 20,
+                            }}>
+                                <Picker
+                                    selectedValue={paymentMethod}
+                                    onValueChange={(itemValue) => setPaymentMethod(itemValue)}
+                                >
 
-            <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirmDate}
-                onCancel={() => setDatePickerVisible(false)}
-            />
+                                    <Picker.Item label={translations.card} value="Karta" style={{ color: "#76787A", }} />
+                                    <Picker.Item label={translations.cash} value="Gotówka" style={{ color: "#76787A", }} />
+
+                                </Picker>
+                            </View>
+
+                            {/* Amount */}
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.sum}</Text>
+
+                            <View style={styles.inputWrapper}>
+                                <Text style={styles.currencySymbol}>zł</Text>
+                                <TextInput
+                                    style={[styles.numericInput, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}
+                                    keyboardType="numeric"
+                                    value={amount}
+                                    onChangeText={handleAmountInput}
+                                    placeholder="0"
+                                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                />
+                            </View>
+
+                            {/* Date */}
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.date}</Text>
+                            <TouchableOpacity
+                                style={styles.input}
+                                onPress={() => setDatePickerVisible(true)}
+                            >
+                                <Text style={{ color: isDarkMode ? '#fff' : '#000' }}>{date || `${currentYear}-00-00`}</Text>
+                            </TouchableOpacity>
+
+                            {/* Note */}
+                            <Text style={{ color: "#76787A", fontSize: 15, fontFamily: 'Montserrat-Light', marginBottom: 10 }}>{translations.Note}</Text>
+                            <TextInput
+                                style={{
+                                    borderWidth: 1,
+                                    borderColor: '#ccc',
+                                    borderRadius: 10,
+                                    padding: 10,
+                                    color: isDarkMode ? '#fff' : '#000'
+                                }}
+                                value={note}
+                                onChangeText={setNote}
+                            />
+
+                            {/* Save Button */}
+                            <TouchableOpacity style={[styles.saveButton, isDarkMode
+                                ? { backgroundColor: '#10CDFC' }
+                                : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
+                                <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
+
+                        <DateTimePickerModal
+                            isVisible={isDatePickerVisible}
+                            mode="date"
+                            onConfirm={handleConfirmDate}
+                            onCancel={() => setDatePickerVisible(false)}
+                        />
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

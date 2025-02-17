@@ -8,6 +8,10 @@ import {
     Alert,
     Image,
     SafeAreaView,
+    ScrollView, KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -79,65 +83,76 @@ const TotalBalance = () => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? '#112540' : '#fff', }}>
-            <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
-            <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
-                <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 20 }}>
-                    <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
-                        onPress={() => navigation.navigate('Homepage')}
+
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        keyboardShouldPersistTaps="handled"
                     >
 
-                        <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
-                            ? { tintColor: '#112540' }
-                            : { tintColor: '#fff' }]} />
-                        <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={toggleSidebar}>
-                        <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
-                            ? { tintColor: '#112540' }
-                            : { tintColor: '#fff' }]} />
-                    </TouchableOpacity>
+                        <Sidebar isVisible={isSidebarVisible} onClose={toggleSidebar} />
+                        <View style={{ height: 70, backgroundColor: isDarkMode ? '#10CDFC' : '#1C26FF', display: "flex", borderBottomLeftRadius: 30, borderBottomRightRadius: 30 }}>
+                            <View style={{ display: "flex", justifyContent: "space-between", flexDirection: "row", alignItems: "center", paddingHorizontal: 20, marginTop: 20 }}>
+                                <TouchableOpacity style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}
+                                    onPress={() => navigation.navigate('Homepage')}
+                                >
 
-                </View>
-            </View>
+                                    <Image source={require('../assets/rightArrow.png')} style={[isDarkMode
+                                        ? { tintColor: '#112540' }
+                                        : { tintColor: '#fff' }]} />
+                                    <Text style={{ color: isDarkMode ? '112540' : '#fff', fontSize: 15, marginLeft: 10 }}>{translations.goHome}</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={toggleSidebar}>
+                                    <Image source={require('../assets/Menu.png')} style={[styles.menu, isDarkMode
+                                        ? { tintColor: '#112540' }
+                                        : { tintColor: '#fff' }]} />
+                                </TouchableOpacity>
 
-            <View style={[styles.container, isDarkMode
-                ? { backgroundColor: '#112540' }
-                : { backgroundColor: '#fff' }]}>
+                            </View>
+                        </View>
 
-                <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
-                    <View>
-                        <Text style={[styles.title, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}>{translations.totalBalance}</Text>
-                        <Text style={[styles.totalBalance, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}>
-                            {/* {cardBalance + cashBalance} zł */}
-                            {(cardBalance + cashBalance).toFixed(2)} zł
-                        </Text>
-                    </View>
+                        <View style={[styles.container, isDarkMode
+                            ? { backgroundColor: '#112540' }
+                            : { backgroundColor: '#fff' }]}>
 
-                    <Image source={require('../assets/calculatorImage.png')} style={{}} />
-                </View>
+                            <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", }}>
+                                <View>
+                                    <Text style={[styles.title, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}>{translations.totalBalance}</Text>
+                                    <Text style={[styles.totalBalance, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}>
+                                        {/* {cardBalance + cashBalance} zł */}
+                                        {(cardBalance + cashBalance).toFixed(2)} zł
+                                    </Text>
+                                </View>
+
+                                <Image source={require('../assets/calculatorImage.png')} style={{}} />
+                            </View>
 
 
-                <View style={styles.balanceRow}>
-                    <View>
-                        <Text style={styles.balanceTitle}>{translations.card}</Text>
-                        <Text style={[styles.balanceValue, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}>{cardBalance.toFixed(2)} zł</Text>
-                    </View>
-                    <View style={{ alignItems: "flex-end" }}>
-                        <Text style={styles.balanceTitle}>{translations.cash}</Text>
-                        <Text style={[styles.balanceValue, isDarkMode
-                            ? { color: '#fff' }
-                            : { color: '#000' }]}>{cashBalance.toFixed(2)} zł</Text>
-                    </View>
-                </View>
+                            <View style={styles.balanceRow}>
+                                <View>
+                                    <Text style={styles.balanceTitle}>{translations.card}</Text>
+                                    <Text style={[styles.balanceValue, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}>{cardBalance.toFixed(2)} zł</Text>
+                                </View>
+                                <View style={{ alignItems: "flex-end" }}>
+                                    <Text style={styles.balanceTitle}>{translations.cash}</Text>
+                                    <Text style={[styles.balanceValue, isDarkMode
+                                        ? { color: '#fff' }
+                                        : { color: '#000' }]}>{cashBalance.toFixed(2)} zł</Text>
+                                </View>
+                            </View>
 
-                {/* Editable inputs */}
-                <TextInput
+                            {/* Editable inputs */}
+                            {/* <TextInput
                     style={[styles.input, isDarkMode
                         ? { color: '#fff' }
                         : { color: '#000' },]}
@@ -156,34 +171,37 @@ const TotalBalance = () => {
                     value={otherIncome}
                     keyboardType="numeric"
                     onChangeText={text => setOtherIncome(text)}
-                />
-                <TextInput
-                    style={[styles.input, isDarkMode
-                        ? { color: '#fff' }
-                        : { color: '#000' },]}
-                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                    placeholder={translations.cash}
-                    value={cashInput}
-                    keyboardType="numeric"
-                    onChangeText={text => setCashInput(text)}
-                />
-                <TextInput
-                    style={[styles.input, isDarkMode
-                        ? { color: '#fff' }
-                        : { color: '#000' },]}
-                    placeholderTextColor={isDarkMode ? '#fff' : '#000'}
-                    placeholder={translations.card}
-                    value={cardInput}
-                    keyboardType="numeric"
-                    onChangeText={text => setCardInput(text)}
-                />
+                /> */}
+                            <TextInput
+                                style={[styles.input, isDarkMode
+                                    ? { color: '#fff' }
+                                    : { color: '#000' },]}
+                                placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                placeholder={translations.cash}
+                                value={cashInput}
+                                keyboardType="numeric"
+                                onChangeText={text => setCashInput(text)}
+                            />
+                            <TextInput
+                                style={[styles.input, isDarkMode
+                                    ? { color: '#fff' }
+                                    : { color: '#000' },]}
+                                placeholderTextColor={isDarkMode ? '#fff' : '#000'}
+                                placeholder={translations.card}
+                                value={cardInput}
+                                keyboardType="numeric"
+                                onChangeText={text => setCardInput(text)}
+                            />
 
-                <TouchableOpacity style={[styles.saveButton, isDarkMode
-                    ? { backgroundColor: '#10CDFC' }
-                    : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
-                </TouchableOpacity>
-            </View>
+                            <TouchableOpacity style={[styles.saveButton, isDarkMode
+                                ? { backgroundColor: '#10CDFC' }
+                                : { backgroundColor: '#1C26FF' }]} onPress={handleSave}>
+                                <Text style={styles.saveButtonText}>{translations.saveButton}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };
