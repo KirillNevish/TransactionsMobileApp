@@ -65,6 +65,26 @@ const TransactionsHistory = () => {
         setModalVisible(true);
     };
 
+
+    const handleDeleteTransaction = async (transactionToDelete) => {
+        if (!transactionToDelete) return;
+
+        const updatedTransactions = transactions.filter(transaction => transaction !== transactionToDelete);
+        setTransactions(updatedTransactions);
+
+        if (transactionToDelete.paymentMethod === 'Karta') {
+            setCardBalance(cardBalance + transactionToDelete.amount);
+        } else if (transactionToDelete.paymentMethod === 'Gotówka') {
+            setCashBalance(cashBalance + transactionToDelete.amount);
+        }
+
+        try {
+            await AsyncStorage.setItem('transactions', JSON.stringify(updatedTransactions));
+        } catch (error) {
+            console.error('Error saving transactions to AsyncStorage:', error);
+        }
+    };
+
     // Save updated transaction
     const saveUpdatedTransaction = async (updatedTransaction) => {
         const updatedTransactions = transactions.map((transaction) =>
@@ -136,12 +156,14 @@ const TransactionsHistory = () => {
                                         <Swipeable
                                             key={index}
                                             renderRightActions={() => (
-                                                <TouchableOpacity style={{ bottom: -15, marginLeft: 5 }} onPress={() => handleEditTransaction(transaction)}>
-                                                    <Image
-                                                        source={require('../assets/EditButton.png')}
-                                                        style={{ width: 40, height: 40 }}
-                                                    />
-                                                </TouchableOpacity>
+                                                <View style={{ flexDirection: 'row', gap: 5, bottom: -15, marginLeft: 10 }}>
+                                                    <TouchableOpacity onPress={() => handleEditTransaction(transaction)}>
+                                                        <Image source={require('../assets/EditButton.png')} style={{ width: 40, height: 40 }} />
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity onPress={() => handleDeleteTransaction(transaction)} style={{ width: 40, height: 40, backgroundColor: "red", borderRadius: 12, justifyContent: "center", alignItems: "center" }}>
+                                                        <Image source={require('../assets/trash-solid.png')} style={{ width: 15, height: 15 }} />
+                                                    </TouchableOpacity>
+                                                </View>
                                             )}
                                         >
                                             <View key={index} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: isDarkMode ? '#112540' : '#F3F3F3', borderRadius: 12, padding: 15 }}>
@@ -170,14 +192,6 @@ const TransactionsHistory = () => {
 
                             </View>
                         </ScrollView>
-                        {/* Modal for editing */}
-                        {/* <Modal visible={modalVisible} animationType="slide" transparent={true}>
-                            <EditTransactionForm
-                                transaction={editingTransaction}
-                                onSave={saveUpdatedTransaction}
-                                onCancel={() => setModalVisible(false)}
-                            />
-                        </Modal> */}
 
                         {modalVisible && editingTransaction && (
                             <Modal visible={modalVisible} animationType="slide" transparent={true}>
